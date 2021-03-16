@@ -5,6 +5,7 @@ let model = {
             room_id:100,
             room_type: "standart", //or business, premium
             beds : 2,
+            kids : 1,
         }
     ],
     prices : {
