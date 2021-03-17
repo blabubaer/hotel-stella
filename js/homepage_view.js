@@ -1,9 +1,8 @@
 /*borgar lager homepageview*/
-let app = document.getElementById("app");
-homepageview();
+
 function homepageview(){
     let html ='';
-    html += '<div id="header"><h1>Hotell Stella</h1><span id="login">login</span></div>';
+    html += '<div id="header"><h1 onclick="setHomeView">Hotell Stella</h1><span id="login" onclick="login()">login</span></div>';
     html += `
         <div class="searchField">    
             <label for="startDato">Start Dato:</label>
