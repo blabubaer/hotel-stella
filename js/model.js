@@ -2,6 +2,8 @@ let model = {
     input : {
         tempUser: '',
         tempPassw: '',
+        start_date: '',
+        
     },
     rooms: [
         {
