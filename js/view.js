@@ -125,9 +125,6 @@ function updateSearchView() {
         <p>${room.room_id}
          <div id="room.room_id">
         <img scr=${img_url} alt="Standard" width="350" height="200">
-          </a>
-       <div class="desc">Add a description of the image/room here</div>
-      </div></p>
         <p>${room.room_type}</p>
         <p>${room_price}</p>
         <button class="btn">Velg</button>
