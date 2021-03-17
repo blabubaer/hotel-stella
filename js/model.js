@@ -10,23 +10,33 @@ let model = {
     },
     rooms: [
         {
-            room_id:100,
+            room_id:101,
             room_type: "standart", //or business, premium
+            room_prices: "1000kr",
+            beds : 2,
+            kids : 1,
+            booked_dates:[],
+            
+        },
+        {
+            room_id:201,
+            room_type: "business", //or business, premium
+            room_prices: "1200kr",
             beds : 2,
             kids : 1,
             booked_dates:[],
         },
         {
-            room_id:101,
+            room_id:301,
             room_type: "premium", //or business, premium
+            room_prices:"1500kr",
             beds : 2,
             kids : 1,
             booked_dates:[],
         }
-
     ],
     prices : {
-        standart : 1000,
+        standard : 1000,
         business: 1200,
         premium: 1500,
     },

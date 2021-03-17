@@ -103,11 +103,34 @@ function updateSearchView() {
         </div>`;
     
     for (var room of model.page.search_results) {
-        
+        var img_url =''
+        var room_price = 0
+   
+        if (room_type == 'standart'){
+        img_url = 'https://amorgoshotel.com/wp-content/uploads/2014/12/Amorgos-Standard-Room1-e1464286427430.jpg'
+        room_price = model.prices.standart
+    } else if
+        (room_type == 'business') {
+            img_url = 'https://t-cf.bstatic.com/images/hotel/max1280x900/557/55724294.jpg'
+            room_price = model.prices.business
+        } else if 
+            (room_type == 'first class'){
+                img_url = 'https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg'
+                room_price = model.prices.premium   
+            }   
+        app.innerHTML = html;
+
         html += `
         <div class="card">
-        <p>${room.room_id}</p>
+        <p>${room.room_id}
+         <div id="room.room_id">
+        <img scr=${img_url} alt="Standard" width="350" height="200">
+          </a>
+       <div class="desc">Add a description of the image/room here</div>
+      </div></p>
         <p>${room.room_type}</p>
+        <p>${room_price}</p>
+        <button class="btn">Velg</button>
         </div>
         
         `
