@@ -1,0 +1,42 @@
+*{
+    padding:0px;
+    margin:0px;
+}
+#app{
+    width:800px;
+    margin: auto;
+}
+#header{
+    display: grid;
+    grid-template-columns: 12fr 1fr;
+}
+h1{
+    margin:10px;
+    padding:10px;
+    margin-left:0px;
+    padding-left:0px;
+}
+#login{
+    margin:10px;
+    padding:10px;
+    margin-right:0px;
+    padding-right:0px;
+}
+#map{
+    margin:auto; 
+    width:600px;
+    margin-top:300px;
+}
+#footer{
+    margin-top:50px;
+}
+.margin{
+    margin-left:10px;
+}
+.btn {
+    width: 50px;
+    height: 30px;
+    background: green;
+    border: none;
+    color: white;
+}
