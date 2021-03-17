@@ -1,5 +1,8 @@
 let model = {
-    input : {},
+    input : {
+        tempUser: '',
+        tempPassw: '',
+    },
     rooms: [
         {
             room_id:100,
