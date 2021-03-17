@@ -50,3 +50,8 @@ h1 {
     border: none;
     color: white;
 }
+
+.card {
+    border: solid 1px;
+    margin: 1rem;
+}

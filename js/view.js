@@ -17,6 +17,7 @@ function setHomeView(){
 }
 function setSearchView() {
     model.page.page_pos = 'searchResults';
+    search()
     updateView();
 }
 function setLoginView(){
@@ -50,7 +51,6 @@ function updateLoginView() {
     app.innerHTML = html;
 }
 function homepageview() {
-    let page = model.page;
     let html = '';
     
     html += `<div id="header"><h1 onclick="setHomeView()">Hotell Stella - ${model.page.page_pos}</h1>`;
@@ -62,11 +62,11 @@ function homepageview() {
     html += `
         <div class="searchField">    
             <label for="startDato">Start Dato:</label>
-            <input type="date" name="startDato">
+            <input type="date" name="startDato" onchange="input_updater(this)">
             <label class="margin" for="sluttDato">Slutt Dato:</label>
-            <input type="date" name="sluttDato" >
+            <input type="date" name="sluttDato" onchange="input_updater(this)">
             <label class="margin" for="antallPersoner">Antall personer:</label>  
-            <input type="text" name="antallPersoner">
+            <input type="text" name="antallPersoner" onchange="input_updater(this)">
             <button onclick="setSearchView()" class="btn">Søk</button>
         </div>
         <div id="map">
@@ -81,7 +81,7 @@ function homepageview() {
 }
 
 function updateSearchView() {
-
+    console.log(model.page.search_results)
     let html = ``;
 
 
@@ -94,17 +94,24 @@ function updateSearchView() {
     html += `
         <div class="searchField">    
             <label for="startDato">Start Dato:</label>
-            <input type="date" name="startDato">
+            <input type="date" name="startDato" onchange="input_updater(this)">
             <label class="margin" for="sluttDato">Slutt Dato:</label>
-            <input type="date" name="sluttDato" >
+            <input type="date" name="sluttDato" onchange="input_updater(this)">
             <label class="margin" for="antallPersoner">Antall personer:</label>  
-            <input type="text" name="antallPersoner">
-            <button class="btn">Søk</button>
+            <input type="text" name="antallPersoner" onchange="input_updater(this)">
+            <button class="btn" onclick="setSearchView()">Søk</button>
         </div>`;
-        /* her må det skrives html */
-    html +=  ` 
-            <p>Her kommer søkeresultat</p>
-        `;
+    
+    for (var room of model.page.search_results) {
+        
+        html += `
+        <div class="card">
+        <p>${room.room_id}</p>
+        <p>${room.room_type}</p>
+        </div>
+        
+        `
+    }
     html += `
         <div id="footer">
             <h2>Stellas Hotel</h2>
@@ -112,4 +119,16 @@ function updateSearchView() {
         </div>
     `;
     app.innerHTML = html;
+}
+
+function input_updater(input_field) {
+    if(input_field.name == "startDato") {
+        model.input.start_date = input_field.valueAsDate
+    }
+    else if(input_field.name == "sluttDato") {
+        model.input.end_date = input_field.valueAsDate
+    }
+    else if (input_field.name == "antallPersoner") {
+        model.input.num_of_pers = parseInt(input_field.value)
+    }
 }

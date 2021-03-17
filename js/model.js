@@ -3,7 +3,10 @@ let model = {
         tempUser: '',
         tempPassw: '',
         start_date: '',
-        
+        end_date: '',
+        num_of_pers: 0,
+        num_of_rooms: 1,
+
     },
     rooms: [
         {
@@ -11,7 +14,16 @@ let model = {
             room_type: "standart", //or business, premium
             beds : 2,
             kids : 1,
+            booked_dates:[],
+        },
+        {
+            room_id:101,
+            room_type: "premium", //or business, premium
+            beds : 2,
+            kids : 1,
+            booked_dates:[],
         }
+
     ],
     prices : {
         standart : 1000,
@@ -28,12 +40,19 @@ let model = {
         booking_number: 1,
         },
     ],
+    /*
     booking_overview:[
         {
             room_id: 100,
             booked_dates:[]
+        },
+        {
+            room_id: 101,
+            booked_dates: []
         }
+
     ],
+    */
     users:  [
         {
             
