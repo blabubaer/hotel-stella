@@ -2,6 +2,20 @@
 //output: list of rooms available at these dates for the amount of people.
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Date.prototype.addDays = function(days) {
     var date = new Date(this.valueOf());
     date.setDate(date.getDate()+days);
