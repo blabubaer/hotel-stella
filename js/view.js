@@ -81,17 +81,15 @@ function homepageview() {
 }
 
 function updateSearchView() {
-    console.log(model.page.search_results)
-    let html = ``;
+  let html = ``;
 
-
-    html += `<div id="header"><h1 onclick="setHomeView()">Hotell Stella - ${model.page.page_pos}</h1>`;
-    if(model.page.current_user == 'guest'){
-        html += `<span id="login" onclick="setLoginView()">login</span></div>`;
-    }else{
-        html += `<span id="login" onclick="userPanel()">${model.page.current_user}</span></div>`;
-    }
-    html += `
+  html += `<div id="header"><h1 onclick="setHomeView()">Hotell Stella - ${model.page.page_pos}</h1>`;
+  if (model.page.current_user == "guest") {
+    html += `<span id="login" onclick="setLoginView()">login</span></div>`;
+  } else {
+    html += `<span id="login" onclick="userPanel()">${model.page.current_user}</span></div>`;
+  }
+  html += `
         <div class="searchField">    
             <label for="startDato">Start Dato:</label>
             <input type="date" name="startDato" onchange="input_updater(this)">
@@ -101,54 +99,52 @@ function updateSearchView() {
             <input type="text" name="antallPersoner" onchange="input_updater(this)">
             <button class="btn" onclick="setSearchView()">Søk</button>
         </div>`;
-    
-    for (var room of model.page.search_results) {
-        var img_url =''
-        var room_price = 0
-   
-        if (room_type == 'standart'){
-        img_url = 'https://amorgoshotel.com/wp-content/uploads/2014/12/Amorgos-Standard-Room1-e1464286427430.jpg'
-        room_price = model.prices.standart
-    } else if
-        (room_type == 'business') {
-            img_url = 'https://t-cf.bstatic.com/images/hotel/max1280x900/557/55724294.jpg'
-            room_price = model.prices.business
-        } else if 
-            (room_type == 'first class'){
-                img_url = 'https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg'
-                room_price = model.prices.premium   
-            }   
-        app.innerHTML = html;
 
-        html += `
-        <div class="card">
-        <p>${room.room_id}
-         <div id="room.room_id">
-        <img scr=${img_url} alt="Standard" width="350" height="200">
-        <p>${room.room_type}</p>
-        <p>${room_price}</p>
-        <button class="btn">Velg</button>
-        </div>
-        
-        `
+  for (var room of model.page.search_results) {
+    var img_url = "";
+    var room_price = 0;
+    console.log(model.page.search_results)
+    if (room.room_type == "standart") {
+      img_url =
+        "https://amorgoshotel.com/wp-content/uploads/2014/12/Amorgos-Standard-Room1-e1464286427430.jpg";
+      room_price = model.prices.standart;
+    } else if (room.room_type == "business") {
+      img_url =
+        "https://t-cf.bstatic.com/images/hotel/max1280x900/557/55724294.jpg";
+      room_price = model.prices.business;
+    } else if (room.room_type == "premium") {
+      img_url =
+        "https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg";
+      room_price = model.prices.premium;
     }
     html += `
+        <div class="card">
+            <p>${room.room_id}
+            <div id="room.room_id">
+            <img src=${img_url} alt="Standard" width="350" height="200">
+            <p>Room Type: ${room.room_type}</p>
+            <p>Price: ${room_price}</p>
+            <button class="btn">Velg</button>
+            </div>
+        </div>
+        
+        `;
+  }
+  html += `
         <div id="footer">
             <h2>Stellas Hotel</h2>
             <p>informasjon om hotellet</p>
         </div>
     `;
-    app.innerHTML = html;
+  app.innerHTML = html;
 }
 
 function input_updater(input_field) {
-    if(input_field.name == "startDato") {
-        model.input.start_date = input_field.valueAsDate
-    }
-    else if(input_field.name == "sluttDato") {
-        model.input.end_date = input_field.valueAsDate
-    }
-    else if (input_field.name == "antallPersoner") {
-        model.input.num_of_pers = parseInt(input_field.value)
-    }
+  if (input_field.name == "startDato") {
+    model.input.start_date = input_field.valueAsDate;
+  } else if (input_field.name == "sluttDato") {
+    model.input.end_date = input_field.valueAsDate;
+  } else if (input_field.name == "antallPersoner") {
+    model.input.num_of_pers = parseInt(input_field.value);
+  }
 }

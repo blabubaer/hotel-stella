@@ -36,7 +36,7 @@ let model = {
         }
     ],
     prices : {
-        standard : 1000,
+        standart : 1000,
         business: 1200,
         premium: 1500,
     },
