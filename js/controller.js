@@ -7,13 +7,73 @@ function login(){
     for (let i = 0; i < model.users.length; i++){
         if(model.input.tempUser == model.users[i].username && model.input.tempPassw == model.users[i].password){
             console.log('logged in as ' + model.users[i].role);
-            model.page.current_user = model.users[i].username;
+            model.page.current_user = model.users[i].userId;
+            model.input.tempUser = '';
+            model.input.tempPassw = '';
+            setUserPanel();
             updateView();
         }
     }
 }
+function logout(){
+    model.page.current_user = 2; 
+    setHomeView();
+}
 
 
+function storePersonalia(){
+    if(model.input.tempUserName != ''){
+        model.users[model.page.current_user].username = model.input.tempUserName;
+    }
+    if(model.input.tempPassw != ''){
+        model.users[model.page.current_user].password = model.input.tempPassw;
+    }
+    if(model.input.tempFirstName != ''){
+        model.users[model.page.current_user].personalia.first_name = model.input.tempFirstName;
+    }
+    if(model.input.tempLastName != ''){
+        model.users[model.page.current_user].personalia.last_name = model.input.tempLastName;
+    }
+    if(model.input.tempStreet != ''){
+        model.users[model.page.current_user].personalia.street = model.input.tempStreet;
+    }
+    if(model.input.tempCity != ''){
+        model.users[model.page.current_user].personalia.city = model.input.tempCity;
+    }
+    if(model.input.tempCountry != ''){
+        model.users[model.page.current_user].personalia.country = model.input.tempCountry;
+    }
+    if(model.input.tempEmail != ''){
+        model.users[model.page.current_user].personalia.email = model.input.tempEmail;
+    }
+    if(model.input.tempTel != ''){
+        model.users[model.page.current_user].personalia.tel_num = model.input.tempTel;
+    }
+    updateView();
+}
+
+function newUser(){
+    let currentUser = model.users.length;
+    model.users.push({
+            username: model.input.tempUserName,
+            password: model.input.tempPassw,
+            role: 'user',
+            userId: model.users.length, 
+            personalia:{
+                first_name: model.input.tempFirstName,
+                last_name: model.input.tempLastName,
+                street: model.input.tempStreet,
+                city: model.input.tempCity,
+                country: model.input.tempCountry,
+                email: model.input.tempEmail,
+                tel_num: model.input.tempTel,
+            },
+            list_of_bookings:[]
+        });
+        model.page.current_user = currentUser;
+        model.page.page_pos = 'login';
+        updateView();
+}
 
 Date.prototype.addDays = function(days) {
     var date = new Date(this.valueOf());

@@ -40,8 +40,16 @@ let model = {
             username: 'test',
             password: 'test',
             role: 'admin',
-            userId: 1,
-            personalia: {}
+            userId: 0,
+            personalia: {
+                first_name: "Christoffer",
+                last_name: "Superstar",
+                street: "Superstreet 7",
+                city: "Larvik",
+                country: "Norway",
+                email: "chr.superstart@gmail.com",
+                tel_num: "+47 91166669",
+            }
 
         },
         {
@@ -49,7 +57,7 @@ let model = {
             username: 'bruker',
             password: 'bruker',
             role: 'user',
-            userId: 2,
+            userId: 1,
             personalia: {
                 first_name: "Christoffer",
                 last_name: "Superstar",
@@ -67,14 +75,22 @@ let model = {
             username: 'Guest',
             password: '',
             role: 'guest',
-            userId: 3,
-            personalia: {}
+            userId: 2,
+            personalia: {
+                first_name: "Guest",
+                last_name: "Superstar",
+                street: "Superstreet 7",
+                city: "Larvik",
+                country: "Norway",
+                email: "chr.superstart@gmail.com",
+                tel_num: "+47 91166669",
+            }
 
         },
         
         ],
     page: {
-        current_user: 'guest',
+        current_user: 2,
         page_pos: 'home',
         search_results: [],
     }
