@@ -50,19 +50,6 @@ let model = {
         booking_number: 1,
         },
     ],
-    /*
-    booking_overview:[
-        {
-            room_id: 100,
-            booked_dates:[]
-        },
-        {
-            room_id: 101,
-            booked_dates: []
-        }
-
-    ],
-    */
     users:  [
         {
             

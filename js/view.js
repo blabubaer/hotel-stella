@@ -166,17 +166,41 @@ function homepageview() {
 function updateSearchView() {
   let html = ``;
 
-    let html = ``;
-
    html += viewHeader();     
    html += searchBannerView();
-    
-        /* her må det skrives html */
-    html +=  ` 
-            <p>Her kommer søkeresultat</p>
+   //looping through the search results
+   for (var room of model.page.search_results) {
+     var img_url = "";
+     var room_price = 0;
+     if (room.room_type == "standart") {
+       img_url =
+         "https://amorgoshotel.com/wp-content/uploads/2014/12/Amorgos-Standard-Room1-e1464286427430.jpg";
+       room_price = model.prices.standart;
+     } else if (room.room_type == "business") {
+       img_url =
+         "https://t-cf.bstatic.com/images/hotel/max1280x900/557/55724294.jpg";
+       room_price = model.prices.business;
+     } else if (room.room_type == "premium") {
+       img_url =
+         "https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg";
+       room_price = model.prices.premium;
+     }
+     html += `
+        <div class="card">
+            <p>${room.room_id}
+            <div id="room.room_id">
+            <img src=${img_url} alt="Standard" width="350" height="200">
+            <p>Room Type: ${room.room_type}</p>
+            <p>Price: ${room_price}</p>
+            <button class="btn">Velg</button>
+            </div>
+        </div>
+        
         `;
-        html += footerView(); 
-    app.innerHTML = html;
+   }
+
+   html += footerView();
+   app.innerHTML = html;
 }
 
 
@@ -189,8 +213,8 @@ function searchBannerView(){
             <label class="margin" for="sluttDato">Slutt Dato:</label>
             <input type="date" name="sluttDato" onchange="input_updater(this)">
             <label class="margin" for="antallPersoner">Antall personer:</label>  
-            <input type="text" name="antallPersoner">
-            <button class="btn small">Søk</button>
+            <input type="text" name="antallPersoner" onchange="input_updater(this)">
+            <button class="btn small" onclick="setSearchView()">Søk</button>
         </div>`;
         return html
 }

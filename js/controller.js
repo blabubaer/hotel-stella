@@ -114,7 +114,6 @@ function search() {
     for (var room of available_rooms){
         tot_beds += room.beds
     }
-    console.log(available_rooms)
     //available_rooms empty
     if(available_rooms.length === 0) return "No rooms available during the chosen dates. Please choose another time for your stay."
 
@@ -141,3 +140,13 @@ function search() {
     }
 
 }
+
+function input_updater(input_field) {
+    if (input_field.name == "startDato") {
+      model.input.start_date = input_field.valueAsDate;
+    } else if (input_field.name == "sluttDato") {
+      model.input.end_date = input_field.valueAsDate;
+    } else if (input_field.name == "antallPersoner") {
+      model.input.num_of_pers = parseInt(input_field.value);
+    }
+  }
