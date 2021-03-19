@@ -130,7 +130,8 @@ function updateLoginView() {
     let html = '';
     html += viewHeader();  
     html += `
-        <div class="Login">    
+        <div class="Login"> 
+            <p style="color:red;" class="error">${model.page.error}</p>   
             <label for="user">Brukernavn:</label><br>
             <input type="text" placeholder="Skriv inn brukernavn" onchange="model.input.tempUser = this.value" name="user"><br>
             <label for="psw">Passord:</label><br>

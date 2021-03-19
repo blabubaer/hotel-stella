@@ -12,6 +12,9 @@ function login(){
             model.input.tempPassw = '';
             setUserPanel();
             updateView();
+        }else{
+            model.page.error = 'Galt brukernavn eller passord';
+            updateView();
         }
     }
 }

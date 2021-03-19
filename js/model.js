@@ -109,6 +109,7 @@ let model = {
         current_user: 2,
         page_pos: 'home',
         search_results: [],
+        error: '',
     }
 }
 
