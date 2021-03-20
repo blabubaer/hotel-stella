@@ -5,7 +5,7 @@
 
 function login(){
     for (let i = 0; i < model.users.length; i++){
-        if(model.input.tempUser == model.users[i].username && model.input.tempPassw == model.users[i].password){
+        if(model.input.tempUser == model.users[i].personalia.email && model.input.tempPassw == model.users[i].password){
             console.log('logged in as ' + model.users[i].role);
             model.page.current_user = model.users[i].userId;
             model.input.tempUser = '';
@@ -56,8 +56,17 @@ function storePersonalia(){
 }
 
 function newUser(){
-    let currentUser = model.users.length;
-    model.users.push({
+    let isUnique = true; 
+    for(var user of model.users){
+        if(user.personalia.email == model.input.tempEmail){ //epost er ikke unik 
+           model.page.error = 'Eposten '+ model.input.tempEmail+ ' eksisterer fra før - velg ny epost';
+           updateView();
+           isUnique = false;
+        }
+    }
+    if(isUnique){ //epost er unik
+        let currentUser = model.users.length;
+        model.users.push({
             username: model.input.tempUserName,
             password: model.input.tempPassw,
             role: 'user',
@@ -76,6 +85,7 @@ function newUser(){
         model.page.current_user = currentUser;
         model.page.page_pos = 'login';
         updateView();
+    }
 }
 
 Date.prototype.addDays = function(days) {

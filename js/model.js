@@ -42,13 +42,21 @@ let model = {
     },
     bookings: [
         {
-        room_id: 100,
-        userId: 2, /// user id eller epost! 
+        room_id: 101,
+        userId: 0, /// user id eller epost! 
         date: '24/12/2021',
         endDate: '25/12/2021',
         num_pers: 2,
         booking_number: 1,
         },
+        {
+            room_id: 201,
+            userId: 0, /// user id eller epost! 
+            date: '25/12/2021',
+            endDate: '27/12/2021',
+            num_pers: 2,
+            booking_number: 1,
+            },
     ],
     users:  [
         {

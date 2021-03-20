@@ -43,7 +43,6 @@ function setCreateNewUser(){
 function updateNewUserView(){
     let page = model.page;
     let html = '';
-    
     html += viewHeader();  
     html += searchBannerView();
     html += `
@@ -51,9 +50,11 @@ function updateNewUserView(){
         <div>
         <h2>Velkommen ny bruker </h2>
             <div id="usersPannel">
-            <p class="red">Fyll ut alle feltene nedenfor for å registrere en ny bruker</p>
-            <br><h3>Profildata:</h3><br><label for="userName">Brukernavn:</label><br>
-                <input name="userName" onchange="model.input.tempUserName = this.value" > <br>
+            <p>Fyll ut alle feltene nedenfor for å registrere en ny bruker</p>
+            <p class="red">${page.error}</p>
+            <br><h3>Profildata:</h3><br><label for="email">Email:</label><br>
+            <input name="email"  onchange="model.input.tempEmail = this.value"><br>
+            
                 <label for="password">Passord:</label><br>
                 <input name="password" onchange="model.input.tempPassw = this.value" ><br>
                 <br><h3>Navn:</h3><br><label for="firstname">Fornavn:</label><br>
@@ -66,9 +67,7 @@ function updateNewUserView(){
                 <input name="city"  onchange="model.input.tempCity = this.value" ><br>
                 <label for="country">Land:</label><br>
                 <input name="country"  onchange="model.input.tempCountry = this.value"><br>
-                <br><h3>Kontakt:</h3><br><label for="email">Email:</label><br>
-                <input name="email"  onchange="model.input.tempEmail = this.value"><br>
-                <label for="tel">Telefon:</label><br>
+                <br><h3>Kontakt:</h3><br><label for="tel">Telefon:</label><br>
                 <input name="tel"  onchange="model.input.tempTel = this.value"><br>
                 <button onclick="newUser()" class="btn">Lagre</button>
             </div>
@@ -94,9 +93,8 @@ function updateUserpanelView() {
         <div>
         <h2>Velkommen ${model.users[model.page.current_user].personalia.first_name}  </h2>
             <div id="usersPannel">
-                <br><h3>Persondata:</h3><br><label for="userName">Brukernavn:</label><br>
-                <input name="userName" onchange="model.input.tempUserName = this.value" value="${model.users[model.page.current_user].username}"> <br>
-                <label for="password">Passord:</label><br>
+                <br><h3>Persondata:</h3><br><label for="email">Email:</label><br>
+                <input name="email"  onchange="model.input.tempEmail = this.value" value="${model.users[model.page.current_user].personalia.email}"><br><label for="password">Passord:</label><br>
                 <input name="password" onchange="model.input.tempPassw = this.value" value ="${model.users[model.page.current_user].password}"><br>
                 <br><h3>Navn:</h3><br><label for="firstname">Fornavn:</label><br>
                 <input name="firstName"  onchange="model.input.tempFirstName = this.value" value="${model.users[model.page.current_user].personalia.first_name}"><br>
@@ -108,15 +106,31 @@ function updateUserpanelView() {
                 <input name="city"  onchange="model.input.tempCity = this.value" value="${model.users[model.page.current_user].personalia.city}"><br>
                 <label for="country">Land:</label><br>
                 <input name="country"  onchange="model.input.tempCountry = this.value" value="${model.users[model.page.current_user].personalia.country}"><br>
-                <br><h3>Kontaktinformasjon:</h3><br><label for="email">Email:</label><br>
-                <input name="email"  onchange="model.input.tempEmail = this.value" value="${model.users[model.page.current_user].personalia.email}"><br>
+                <br><h3>Kontaktinformasjon:</h3><br>
                 <label for="tel">Telefon:</label><br>
                 <input name="tel"  onchange="model.input.tempTel = this.value" value="${model.users[model.page.current_user].personalia.tel_num}"><br>
                 <button style="    width: 159px;
                 height: 38px; margin-top:20px;" onclick="storePersonalia()" class="btn">Lagre</button>
             </div>
-            <div id="bookings">
             
+                `;
+            html += `<h2>${model.users[model.page.current_user].personalia.first_name}'s bookings</h2>`; 
+            html += `<div id="bookings">`;
+                    for(let booking of model.bookings){
+                        if(booking.userId == model.page.current_user){
+                            html+= '<div class="booking">';
+                            html += `<br>`;
+                            for (let room of model.rooms){
+                                if (room.room_id == booking.room_id){ // alle rom med rom nr fra booking
+                                    html += room.room_type;
+                                }
+                            }
+                            html += `<br>`;
+                            html += booking.date;
+                            html += `</div>`;
+                        }
+                    }
+                html +=`
             </div>
         </div>
        

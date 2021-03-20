@@ -89,3 +89,17 @@ h2{
 .red{
     color:red;
 }
+.booking{
+    width: 150px;
+    height: 150px;
+    text-align: center;
+    background: #efefef;
+    margin-top: 50px;
+    padding: 20px;
+    margin-right: 50px;
+    cursor: pointer;
+}
+#bookings{
+    display:flex;
+    flex-wrap:wrap;
+}
