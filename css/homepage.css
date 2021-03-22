@@ -103,3 +103,14 @@ h2{
     display:flex;
     flex-wrap:wrap;
 }
+.searchField{
+    
+    margin-bottom: 50px;
+
+}
+.booked{
+    background-color: red;
+}
+.notBooked{
+    background-color: green;
+}

@@ -42,10 +42,10 @@ let model = {
         premium: 1500,
     },
     bookings: [
-       /* {
+        {
             room_id: 201,
             userId: 0, /// user id eller epost! 
-            date: new Date().setDate(2021-12-25),
+            date: new Date().setDate(25),
             endDate: '27/12/2021',
             num_pers: 2,
             booking_number: 1,
@@ -53,11 +53,19 @@ let model = {
         {
         room_id: 101,
         userId: 0, /// user id eller epost! 
-            date: new Date(2021-12-24),
+            date: new Date().setDate(24),
         endDate: '25/12/2021',
         num_pers: 2,
-        booking_number: 1,
-        },*/
+        booking_number: 2,
+        },
+        {
+            room_id: 101,
+        userId: 0, /// user id eller epost! 
+            date: new Date().setDate(26),
+        endDate: '25/12/2021',
+        num_pers: 2,
+        booking_number: 3,
+        },
         
     ],
     users:  [

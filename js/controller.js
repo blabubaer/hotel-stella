@@ -42,11 +42,13 @@ function logout(){
 function book(roomId) {
     let bookings = model.bookings;
     let date = new Date();
-    date.setDate(model.input.start_date);
+    var string = model.input.start_date
+    date.setDate(string.getDate());
+   
     bookings.push({
         room_id: roomId,
         userId: model.page.current_user,
-        date: model.input.start_date,
+        date: date,
         endDate: model.input.end_date,
         num_pers: model.input.num_of_pers,
         booking_number: bookings.length,

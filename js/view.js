@@ -59,39 +59,48 @@ function updateAdminView() {
             <th>romnr</th>
             `
     dates = sort_by_key(model.bookings, 'date');
+   
     let firstTime = true;
-    let firstDay = new Date();
     Date.prototype.addDays = function (days) { //funker som fjell 
         var date = new Date(this.valueOf());
         date.setDate(date.getDate() + days);
         return date;
     }
-    let newDate;
-    let aBookedDate = new Date();
-    for (let date of dates) {
-        aBookedDate.setDate(date.date);
-        console.log(date.date);
+    
+    let week = [];
+    for (let date of dates) {// alle datoene i modelen sortert i stigene rekkefølge
+        //aBookedDate.setDate(date.date.getDate());
+        dateString = new Date(date.date);
         if (firstTime) {
             firstTime = false;
-            firstDay.setDate(date.date.getDate());
-            html += '<th>' + date.date + '</th>';
-            console.log(firstDay);
-            newDate = firstDay.addDays(1);
-            html += '<th>' + newDate.getDate() + '</th>';
-        } else {
-            for (let i = 1; i < 6; i++) {
-                newDate = newDate.addDays(1);
-                html += '<th>' + newDate + '</th>';
-                
-                console.log(aBookedDate + " compared with " + newDate);
-                if (aBookedDate == newDate || aBookedDate == firstDay) {
-                    html += '<tr><td>' + date.room_id + '</td>';
-                    html += '<td>Booked </td>';
-                    html += '</tr>';
-                }
+            
+            week.push(new Date(dateString));
+            week.push( new Date(dateString.addDays(1)));
+            week.push( new Date(dateString.addDays(2)));
+            week.push( new Date(dateString.addDays(3)));
+            week.push( new Date(dateString.addDays(4))); /* Legger til en dato for hele uken */
+            week.push( new Date(dateString.addDays(5)));
+            week.push( new Date(dateString.addDays(6)));
+            week.push( new Date(dateString.addDays(7)));
+            for(let weekday of week){
+                html += '<th>' + weekday + '</th>';
             }
         }
-        
+           
+            html += '</tr><tr>';
+            html += '<td>' + date.room_id + '</td>';
+            
+            for(let weekday of week){
+                if(weekday.getDate() === dateString.getDate()){
+                   html+= '<td class="booked">'+ 'booked' +'</td>'
+                }else{
+                    html += '<td class="notBooked"> Not Booked </td>'
+                }
+            }
+            
+            html += '</tr>'
+       
+       
     }
     
      html +=   ` 
@@ -300,6 +309,9 @@ function viewHeader(){
     if(model.page.current_user == '2'){
         html += `<div class="logout"><span onclick="setLoginView()">login</span></div></div>`;
 
+    }else if(model.page.current_user == 0){
+        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="setAdminPanel()">admin</span><span onclick="logout()">logout</span></div></div>`;
+  
     }else{
         html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="logout()">logout</span></div></div>`;
     }
