@@ -1,16 +1,32 @@
 // input: start-date, end-date, number of persons, number of kids, number of rooms wished
 //output: list of rooms available at these dates for the amount of people.
 
+function isEmailValid(email) {
+    var pattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+    return email.match(pattern);
+}
+
+function sort_by_key(array, key) {
+    return array.sort(function (a, b) {
+        var x = a[key]; var y = b[key];
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+}
 
 
-function login(){
+function login (){
     for (let i = 0; i < model.users.length; i++){
         if(model.input.tempUser == model.users[i].personalia.email && model.input.tempPassw == model.users[i].password){
             console.log('logged in as ' + model.users[i].role);
             model.page.current_user = model.users[i].userId;
+            if (model.users[model.page.current_user].userId == 0) {
+                setAdminPanel();
+            } else {
+                setUserPanel();
+            }
             model.input.tempUser = '';
             model.input.tempPassw = '';
-            setUserPanel();
+            
             updateView();
         }else{
             model.page.error = 'Galt brukernavn eller passord';
@@ -23,6 +39,20 @@ function logout(){
     setHomeView();
 }
 
+function book(roomId) {
+    let bookings = model.bookings;
+    let date = new Date();
+    date.setDate(model.input.start_date);
+    bookings.push({
+        room_id: roomId,
+        userId: model.page.current_user,
+        date: model.input.start_date,
+        endDate: model.input.end_date,
+        num_pers: model.input.num_of_pers,
+        booking_number: bookings.length,
+    }
+    )
+}
 
 function storePersonalia(){
     if(model.input.tempUserName != ''){
@@ -56,7 +86,10 @@ function storePersonalia(){
 }
 
 function newUser(){
-    let isUnique = true; 
+    let isUnique = true;
+
+    let validEmail = isEmailValid(model.input.tempEmail);
+    console.log(validEmail);
     for(var user of model.users){
         if(user.personalia.email == model.input.tempEmail){ //epost er ikke unik 
            model.page.error = 'Eposten '+ model.input.tempEmail+ ' eksisterer fra før - velg ny epost';
@@ -64,14 +97,15 @@ function newUser(){
            isUnique = false;
         }
     }
-    if(isUnique){ //epost er unik
+    if (isUnique && validEmail) { //epost er unik
         let currentUser = model.users.length;
+        model.page.error = '';
         model.users.push({
             username: model.input.tempUserName,
             password: model.input.tempPassw,
             role: 'user',
-            userId: model.users.length, 
-            personalia:{
+            userId: model.users.length,
+            personalia: {
                 first_name: model.input.tempFirstName,
                 last_name: model.input.tempLastName,
                 street: model.input.tempStreet,
@@ -80,10 +114,13 @@ function newUser(){
                 email: model.input.tempEmail,
                 tel_num: model.input.tempTel,
             },
-            list_of_bookings:[]
+            list_of_bookings: []
         });
         model.page.current_user = currentUser;
         model.page.page_pos = 'login';
+        updateView();
+    } else if (!validEmail) {
+        model.page.error = 'Eposten ' + model.input.tempEmail + ' er ikke korrekt ';
         updateView();
     }
 }
@@ -110,12 +147,18 @@ function search() {
         dates_array.push(new Date(current_day))
         current_day = current_day.addDays(1)
     }
+    console.log(dates_array)
 
     // check all the rooms that are free on all of these days and add them to available rooms
     var counter = 0
     for ( var room of model.rooms) {
+        var booked_dates = []
+        for (var date of room.booked_dates){
+            booked_dates.push(date.getTime())
+        }
+        console.log(booked_dates)
         for (var date of dates_array){
-            if(room.booked_dates.includes(date)) break;
+            if(booked_dates.includes(date.getTime())) break;
             else counter ++
         }
         if (counter === dates_array.length) available_rooms.push(room)
@@ -156,10 +199,15 @@ function search() {
 
 function input_updater(input_field) {
     if (input_field.name == "startDato") {
-      model.input.start_date = input_field.valueAsDate;
+        model.input.start_date = new Date (input_field.valueAsDate);
+        console.log(input_field.value)
     } else if (input_field.name == "sluttDato") {
-      model.input.end_date = input_field.valueAsDate;
+        model.input.end_date = input_field.valueAsDate;
     } else if (input_field.name == "antallPersoner") {
-      model.input.num_of_pers = parseInt(input_field.value);
+        model.input.num_of_pers = parseInt(input_field.value);
     }
   }
+
+function choose_booking() {
+    
+}

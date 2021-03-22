@@ -7,12 +7,16 @@ function updateView() {
         homepageview();
     } else if (model.page.page_pos == 'searchResults') {
         updateSearchView();
-    }else if (model.page.page_pos == 'login'){
+    } else if (model.page.page_pos == 'login') {
         updateLoginView();
-    }else if(model.page.page_pos == 'User panel' && model.page.current_user != 2){
+    } else if (model.page.page_pos == 'User panel' && model.page.current_user != 2) {
         updateUserpanelView();
-    }else if(model.page.page_pos == 'Lag ny bruker'){
+    } else if (model.page.page_pos == 'Lag ny bruker') {
         updateNewUserView();
+    } else if (model.page.page_pos == 'Admin panel') {
+        updateAdminView();
+    } else if (model.page.page_pos == 'bookin-view') {
+        updatebookingview();
     }
 }
 function setHomeView(){
@@ -38,7 +42,64 @@ function setCreateNewUser(){
     updateView();
 }
 
+function setAdminPanel() {
+    model.page.page_pos = 'Admin panel';
+    updateView();
+}
 
+
+function updateAdminView() {
+    let html = ``;
+    html += viewHeader();
+    html += `<div><label for="search">Søk:</label><input name="search" placeholder="Søk på bookingnr"> <label for="date">Dato:</label><input type="date" name="date"><button>Søk</button> </div>`;
+    html += `<div id="bookingOverview">`
+    //sort in loop smallest date first. create view with first date first. and show for a week. 
+    html += `<table style = "width:100%">
+          <tr>
+            <th>romnr</th>
+            `
+    dates = sort_by_key(model.bookings, 'date');
+    let firstTime = true;
+    let firstDay = new Date();
+    Date.prototype.addDays = function (days) { //funker som fjell 
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+    }
+    let newDate;
+    let aBookedDate = new Date();
+    for (let date of dates) {
+        aBookedDate.setDate(date.date);
+        console.log(date.date);
+        if (firstTime) {
+            firstTime = false;
+            firstDay.setDate(date.date.getDate());
+            html += '<th>' + date.date + '</th>';
+            console.log(firstDay);
+            newDate = firstDay.addDays(1);
+            html += '<th>' + newDate.getDate() + '</th>';
+        } else {
+            for (let i = 1; i < 6; i++) {
+                newDate = newDate.addDays(1);
+                html += '<th>' + newDate + '</th>';
+                
+                console.log(aBookedDate + " compared with " + newDate);
+                if (aBookedDate == newDate || aBookedDate == firstDay) {
+                    html += '<tr><td>' + date.room_id + '</td>';
+                    html += '<td>Booked </td>';
+                    html += '</tr>';
+                }
+            }
+        }
+        
+    }
+    
+     html +=   ` 
+        </table >`;
+    
+        html += ` </div>`;
+        app.innerHTML = html;
+}
 
 function updateNewUserView(){
     let page = model.page;
@@ -140,7 +201,6 @@ function updateUserpanelView() {
 }
 
 function updateLoginView() {
-    let page = model.page;
     let html = '';
     html += viewHeader();  
     html += `
@@ -207,7 +267,7 @@ function updateSearchView() {
             <img src=${img_url} alt="Standard" width="350" height="200">
             <p>Room Type: ${room.room_type}</p>
             <p>Price: ${room_price}</p>
-            <button class="btn">Velg</button>
+            <button onclick="book(${room.room_id})" class="btn">Velg</button>
             </div>
         </div>
         
@@ -238,7 +298,8 @@ function viewHeader(){
     let html = '';
     html += `<div id="header"><h1 onclick="setHomeView()">Hotell Stella - ${model.page.page_pos}</h1>`;
     if(model.page.current_user == '2'){
-        html += `<span id="login" onclick="setLoginView()">login</span></div>`;
+        html += `<div class="logout"><span onclick="setLoginView()">login</span></div></div>`;
+
     }else{
         html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="logout()">logout</span></div></div>`;
     }
@@ -252,4 +313,99 @@ function footerView(){
     <p>informasjon om hotellet</p>
     </div>`;
     return html
+}
+
+function updatebookingview(){
+    var html =``
+    html += viewHeader()
+    html += `
+  
+   
+    <div class="Login"> 
+    <p style="color:red;" class="error">${model.page.error}</p>   
+    <label for="user">Brukernavn:</label><br>
+    <input type="text" placeholder="Skriv inn brukernavn" onchange="model.input.tempUser = this.value" name="user"><br>
+    <label for="psw">Passord:</label><br>
+    <input type="password" placeholder="Skriv inn passord" onchange="model.input.tempPassw = this.value" name="psw" >
+    <br>
+    <button onclick="login()" class="btn">login</button><br>
+    <button onclick="setCreateNewUser()" class="blueButton"  >Ny bruker</button>
+    </div>
+    
+    
+    <div id="usersPannel">
+    <br><h3>Persondata:</h3><br><label for="email">Email:</label><br>
+    <input name="email"  onchange="model.input.tempEmail = this.value" value="${model.users[model.page.current_user].personalia.email}"><br><label for="password">Passord:</label><br>
+    <input name="password" onchange="model.input.tempPassw = this.value" value ="${model.users[model.page.current_user].password}"><br>
+    <br><h3>Navn:</h3><br><label for="firstname">Fornavn:</label><br>
+    <input name="firstName"  onchange="model.input.tempFirstName = this.value" value="${model.users[model.page.current_user].personalia.first_name}"><br>
+    <label for="lastname">Etternavn:</label><br>
+    <input name="lastname"  onchange="model.input.tempLastName = this.value" value="${model.users[model.page.current_user].personalia.last_name}"><br>
+    <br><h3>Adresse:</h3><br><label for="street">gatenavn:</label><br>
+    <input name="street"  onchange="model.input.tempStreet = this.value" value="${model.users[model.page.current_user].personalia.street}"><br>
+    <label for="city">By:</label><br>
+    <input name="city"  onchange="model.input.tempCity = this.value" value="${model.users[model.page.current_user].personalia.city}"><br>
+    <label for="country">Land:</label><br>
+    <input name="country"  onchange="model.input.tempCountry = this.value" value="${model.users[model.page.current_user].personalia.country}"><br>
+    <br><h3>Kontaktinformasjon:</h3><br>
+    <label for="tel">Telefon:</label><br>
+    <input name="tel"  onchange="model.input.tempTel = this.value" value="${model.users[model.page.current_user].personalia.tel_num}"><br>
+    <button style="    width: 159px;
+    height: 38px; margin-top:20px;" onclick="storePersonalia()" class="btn">Lagre</button>
+    </div> 
+    `
+
+ 
+    /*
+    <div class="card">
+    <p>${room.room_id}
+    <div id="room.room_id">
+    <img src=${img_url} alt="Standard" width="350" height="200">
+    <p>Room Type: ${room.room_type}</p>
+    <p>Price: ${room_price}</p>
+    <button onclick="book(${room.room_id})" class="btn">Velg</button>
+        </div>
+       
+    */
+    // Confirm
+    
+    html += `<button id="confirmOrder" onclick="Confirm()">Confirm</button></div>`;
+    html += footerView()
+    
+    app.innerHTML = html;
+
+}
+
+function bookingdetailView () {
+    var html =``
+    html += viewHeader()
+    html += `
+    <div class="Searchbardetail">
+    <input type="text" placeholder="Search.." name="search">
+    </div> 
+   
+    ` 
+    html += `<div id="bookings">`;
+                    for(let booking of model.bookings){
+                        if(booking.userId == model.page.current_user){
+                            html+= '<div class="booking">';
+                            html += `<br>`;
+                            for (let room of model.rooms){
+                                if (room.room_id == booking.room_id){ // alle rom med rom nr fra booking
+                                    html += room.room_type;
+                                }
+                            }
+                            html += `<br>`;
+                            html += booking.date;
+                            html += `</div>`;
+                        }
+                    }   
+
+    html += `<button id="searchOrder" onclick="search()">Søk</button></div>`;
+    html += `<button id="SaveDetails" onclick="save()">Lagre</button></div>`;
+    html += `<button id="deleteDetails" onclick="delete()">Slett</button></div>`;
+
+    html += footerView()
+
+    app.innerHTML = html; 
 }

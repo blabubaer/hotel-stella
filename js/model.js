@@ -1,4 +1,5 @@
 let model = {
+    shopping_cart: {},
     input : {
         tempUser: '',
         tempPassw: '',
@@ -41,22 +42,23 @@ let model = {
         premium: 1500,
     },
     bookings: [
-        {
-        room_id: 101,
-        userId: 0, /// user id eller epost! 
-        date: '24/12/2021',
-        endDate: '25/12/2021',
-        num_pers: 2,
-        booking_number: 1,
-        },
-        {
+       /* {
             room_id: 201,
             userId: 0, /// user id eller epost! 
-            date: '25/12/2021',
+            date: new Date().setDate(2021-12-25),
             endDate: '27/12/2021',
             num_pers: 2,
             booking_number: 1,
-            },
+        },
+        {
+        room_id: 101,
+        userId: 0, /// user id eller epost! 
+            date: new Date(2021-12-24),
+        endDate: '25/12/2021',
+        num_pers: 2,
+        booking_number: 1,
+        },*/
+        
     ],
     users:  [
         {
@@ -121,5 +123,10 @@ let model = {
     }
 }
 
+
+//Temp for test
+for (i=0; i<6; i++){
+    model.rooms[1].booked_dates.push(new Date(`2021-03-2`+i+'T01:00:00'))
+}
 
 
