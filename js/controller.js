@@ -43,8 +43,9 @@ function book(roomId) {
     let bookings = model.bookings;
     let date = new Date();
     var string = model.input.start_date
+    var roomBookedDates = model.rooms.booked_dates;
     date.setDate(string.getDate());
-   
+    roomBookedDates.push(date);
     bookings.push({
         room_id: roomId,
         userId: model.page.current_user,
@@ -149,18 +150,21 @@ function search() {
         dates_array.push(new Date(current_day))
         current_day = current_day.addDays(1)
     }
+    console.log('search-dates:')
     console.log(dates_array)
+    
 
     // check all the rooms that are free on all of these days and add them to available rooms
     var counter = 0
     for ( var room of model.rooms) {
         var booked_dates = []
         for (var date of room.booked_dates){
-            booked_dates.push(date.getTime())
+            booked_dates.push(date)
+            
         }
         console.log(booked_dates)
         for (var date of dates_array){
-            if(booked_dates.includes(date.getTime())) break;
+            if(booked_dates.includes(date)) break;
             else counter ++
         }
         if (counter === dates_array.length) available_rooms.push(room)

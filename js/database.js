@@ -10,8 +10,6 @@ var firebaseConfig = {
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
-var database = firebase.database()
+const database = firebase.database()
 
-var objectRef = database.ref().child('object');
-objectRef.on('value', snap => console.log(snap.val()))
 

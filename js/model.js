@@ -16,8 +16,8 @@ let model = {
             room_prices: "1000kr",
             beds : 2,
             kids : 1,
-            booked_dates:[],
-            
+            booked_dates: [],
+
         },
         {
             room_id:201,
@@ -25,7 +25,7 @@ let model = {
             room_prices: "1200kr",
             beds : 2,
             kids : 1,
-            booked_dates:[],
+            booked_dates: [],
         },
         {
             room_id:301,
@@ -45,26 +45,9 @@ let model = {
         {
             room_id: 201,
             userId: 0, /// user id eller epost! 
-            date: new Date().setDate(25),
-            endDate: '27/12/2021',
+            dates: [],           
             num_pers: 2,
             booking_number: 1,
-        },
-        {
-        room_id: 101,
-        userId: 0, /// user id eller epost! 
-            date: new Date().setDate(24),
-        endDate: '25/12/2021',
-        num_pers: 2,
-        booking_number: 2,
-        },
-        {
-            room_id: 101,
-        userId: 0, /// user id eller epost! 
-            date: new Date().setDate(26),
-        endDate: '25/12/2021',
-        num_pers: 2,
-        booking_number: 3,
         },
         
     ],
@@ -133,8 +116,15 @@ let model = {
 
 
 //Temp for test
-for (i=0; i<6; i++){
-    model.rooms[1].booked_dates.push(new Date(`2021-03-2`+i+'T01:00:00'))
+
+function writeData(){
+    var list = []
+    for (i=0; i<6; i++){
+        list.push(Date(`2021-03-2`+i+'T01:00:00'))
+    }
+    database.ref('bookings/0/dates').set(list)
+    database.ref('rooms/1/booked_dates').set(list)
 }
+//writeData()
 
 
