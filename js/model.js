@@ -7,12 +7,13 @@ let model = {
         end_date: '',
         num_of_pers: 0,
         num_of_rooms: 1,
-
+        adminSeachDate:"",
+        adminSearchBookingNr:"",
     },
     rooms: [
         {
             room_id:101,
-            room_type: "standart", //or business, premium
+            room_type: "Standart", //or business, premium
             room_prices: "1000kr",
             beds : 2,
             kids : 1,
@@ -21,7 +22,7 @@ let model = {
         },
         {
             room_id:201,
-            room_type: "business", //or business, premium
+            room_type: "Business", //or business, premium
             room_prices: "1200kr",
             beds : 2,
             kids : 1,
@@ -29,7 +30,7 @@ let model = {
         },
         {
             room_id:301,
-            room_type: "premium", //or business, premium
+            room_type: "Premium", //or business, premium
             room_prices:"1500kr",
             beds : 2,
             kids : 1,
