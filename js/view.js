@@ -221,7 +221,9 @@ function updateAdminView() {
             hasRun = false;
             for (let booking of room.booked_dates) {
                 booking = new Date(booking);
-                if (weekday.toString() == booking.toString()) {
+                
+                console.log(weekday.toString() + booking.toString())
+                if (weekday.getDate().toString() == booking.getDate().toString()) {
                     html += `<td class="booked">${weekday}</td>`;
                     hasRun = true;
                 }
