@@ -91,15 +91,21 @@ function setAdminSearchOnBookingNr() {
 
 function updateAdminSearchOnBookingNr() {
     let html = ``;
+    let imgSrc =``;
     html += viewHeader();
-    html += `<div><label for="search">Søk:</label><input name="search" onchange="model.input.adminSearchBookingNr = this.value" placeholder="Søk på bookingnr"><button onclick="setAdminSearchOnBookingNr()">Søk</button> <label for="date">Dato:</label><input onchange="model.input.adminSeachDate = this.value" type="date" name="date"><button onclick="setAdminSearchOnDate()">Søk</button> </div>`;
+    html += `<div><label for="search">Søk:</label><input name="search" onchange="model.input.adminSearchBookingNr = this.value" placeholder="Søk på bookingnr"><button class="btn small" onclick="setAdminSearchOnBookingNr()">Søk</button> <label for="date">Dato:</label><input onchange="model.input.adminSeachDate = this.value" type="date" name="date"><button class="btn small" onclick="setAdminSearchOnDate()">Søk</button> </div>`;
     html += `<div id="bookingNrSearch">`
     //sort in loop smallest date first. create view with first date first. and show for a week. 
     
     for(let booking of model.bookings){
         if(booking.booking_number == model.input.adminSearchBookingNr){
             html += '<div class="bookingnrWrapper">';
-            html += '<div class="hero" style="background-image:url(`https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg`)"></div>';
+            for(let rom of model.rooms){
+                if(booking.room_id == rom.room_id){
+                    imgSrc = rom.img_url;
+                }
+            }
+            html += `<div class="hero"><img src='${imgSrc}'></div>`;
             html += '<div class="bookingnrContentWrapper"  >';
             for(let room of model.rooms){
                 if(room.room_id == booking.room_id){
@@ -115,9 +121,12 @@ function updateAdminSearchOnBookingNr() {
                 html += date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear() + ' -> ';
             }
             html += '</p>';
+            html += '<button class="deleteButton">Slett reservasjon</button>';
+            html += '<button class="alterButton">Endre reservasjon</button>';
+            html += '</div>';
         }
     }
-    html += '</div>';
+    
     html += ` </div>`;
     app.innerHTML = html;
 }
@@ -127,7 +136,7 @@ function updateAdminSearchOnBookingNr() {
 function updateAdminSearchOnDate() {
     let html = ``;
     html += viewHeader();
-    html += `<div><label for="search">Søk:</label><input name="search" onchange="model.input.adminSearchBookingNr = this.value" placeholder="Søk på bookingnr"><button onclick="setAdminSearchOnBookingNr()">Søk</button> <label for="date">Dato:</label><input onchange="model.input.adminSeachDate = this.value" type="date" name="date"><button onclick="setAdminSearchOnDate()">Søk</button> </div>`;
+    html += `<div><label for="search">Søk:</label><input name="search" onchange="model.input.adminSearchBookingNr = this.value" placeholder="Søk på bookingnr"><button class="btn small" onclick="setAdminSearchOnBookingNr()">Søk</button> <label for="date">Dato:</label><input onchange="model.input.adminSeachDate = this.value" type="date" name="date"><button class="btn small" onclick="setAdminSearchOnDate()">Søk</button> </div>`;
     html += `<div id="bookingOverview">`
     //sort in loop smallest date first. create view with first date first. and show for a week. 
     html += `<table style = "width:100%">
@@ -209,7 +218,7 @@ function updateAdminSearchOnDate() {
 function updateAdminView() {
     let html = ``;
     html += viewHeader();
-    html += `<div><label for="search">Søk:</label><input name="search" onchange="model.input.adminSearchBookingNr = this.value" placeholder="Søk på bookingnr"><button onclick="setAdminSearchOnBookingNr()">Søk</button> <label for="date">Dato:</label><input onchange="model.input.adminSeachDate = this.value" type="date" name="date"><button onclick="setAdminSearchOnDate()">Søk</button> </div>`;
+    html += `<div><label for="search">Søk:</label><input name="search" onchange="model.input.adminSearchBookingNr = this.value" placeholder="Søk på bookingnr"><button class="btn small" onclick="setAdminSearchOnBookingNr()">Søk</button> <label for="date">Dato:</label><input onchange="model.input.adminSeachDate = this.value" type="date" name="date"><button class="btn small" onclick="setAdminSearchOnDate()">Søk</button> </div>`;
     html += `<div id="bookingOverview">`
     //sort in loop smallest date first. create view with first date first. and show for a week. 
     html += `<table style = "width:100%">
