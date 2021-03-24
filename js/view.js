@@ -18,7 +18,6 @@ async function start() {
             for (a=0; a<data.rooms[i].booked_dates.length;a++) {
                     model.rooms[i].booked_dates[a] = new Date(data.rooms[i].booked_dates[a])
                 }
-            
         }
     }
     for (i=0; i< data.bookings.length; i++){
@@ -99,7 +98,9 @@ function updateAdminSearchOnBookingNr() {
     
     for(let booking of model.bookings){
         if(booking.booking_number == model.input.adminSearchBookingNr){
-           
+            html += '<div class="bookingnrWrapper">';
+            html += '<div class="hero" style="background-image:url(`https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg`)"></div>';
+            html += '<div class="bookingnrContentWrapper"  >';
             for(let room of model.rooms){
                 if(room.room_id == booking.room_id){
                     html += `<h2>${room.room_type}</h2>`;
@@ -109,12 +110,14 @@ function updateAdminSearchOnBookingNr() {
             html += `<p>Bookingnr: ${booking.booking_number}</p>`;
             html += `<p>Romnr: ${booking.room_id}</p>`;
             html += `<p>Antall personer: ${booking.num_pers}</p>`;
+            html += '<p>Reserverte datoer: ';
             for(let date of booking.dates){
-                html += date + ' ';
+                html += date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear() + ' -> ';
             }
+            html += '</p>';
         }
     }
-
+    html += '</div>';
     html += ` </div>`;
     app.innerHTML = html;
 }
@@ -161,7 +164,7 @@ function updateAdminSearchOnDate() {
             week.push(new Date(dateString.addDays(6)));
             week.push(new Date(dateString.addDays(7)));
             for (let weekday of week) {
-                html += '<th>' + weekday + '</th>';
+                html += '<th>' + weekday.getDate() + '.'+ weekday.getMonth() +'.'+ weekday.getFullYear() + '</th>';
             }
         }
         //om rooms er tom - print ut ei rad med romNr osv
@@ -177,12 +180,12 @@ function updateAdminSearchOnDate() {
             for (let booking of room.booked_dates) {
                 booking = new Date(booking);
                 if (weekday.toString() == booking.toString()) {
-                    html += `<td class="booked">${weekday}</td>`;
+                    html += `<td class="booked">${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
                     hasRun = true;
                 }
             }
             if (!hasRun) {
-                html += `<td>${weekday}</td>`;
+                html += `<td>${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
 
             }
 
@@ -248,7 +251,7 @@ function updateAdminView() {
             week.push(new Date(dateString.addDays(6)));
             week.push(new Date(dateString.addDays(7)));
             for (let weekday of week) {
-                html += '<th>' + weekday + '</th>';
+                html += '<th>' + weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear() + '</th>';
             }
                 }
         }   
@@ -267,12 +270,12 @@ function updateAdminView() {
                 
                 console.log(weekday.toString() + booking.toString())
                 if (weekday.getDate().toString() == booking.getDate().toString()) {
-                    html += `<td class="booked">${weekday}</td>`;
+                    html += `<td class="booked">${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
                     hasRun = true;
                 }
             }
             if (!hasRun) {
-                html += `<td class="notBooked">${weekday}</td>`;
+                html += `<td class="notBooked">${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
 
             }
 
@@ -470,6 +473,8 @@ function updateSearchView() {
 
 
 function searchBannerView(){
+    var today = (new Date()).getMonth()+(new Date()).getDate()
+    console.log(today)
     let html =``;
     html += `
         <div class="searchField">    

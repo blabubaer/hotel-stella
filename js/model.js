@@ -18,6 +18,7 @@ let model = {
             beds : 2,
             kids : 1,
             booked_dates: [],
+            img_u: "https://amorgoshotel.com/wp-content/uploads/2014/12/Amorgos-Standard-Room1-e1464286427430.jpg",
 
         },
         {
@@ -27,6 +28,7 @@ let model = {
             beds : 2,
             kids : 1,
             booked_dates: [],
+            img_url: "https://t-cf.bstatic.com/images/hotel/max1280x900/557/55724294.jpg",
         },
         {
             room_id:301,
@@ -34,7 +36,8 @@ let model = {
             room_prices:"1500kr",
             beds : 2,
             kids : 1,
-            booked_dates:[],
+            booked_dates:  [],
+            img_url: "https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg",
         }
     ],
     prices : {
