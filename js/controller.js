@@ -92,7 +92,6 @@ function newUser(){
     let isUnique = true;
 
     let validEmail = isEmailValid(model.input.tempEmail);
-    console.log(validEmail);
     for(var user of model.users){
         if(user.personalia.email == model.input.tempEmail){ //epost er ikke unik 
            model.page.error = 'Eposten '+ model.input.tempEmail+ ' eksisterer fra før - velg ny epost';
@@ -147,11 +146,11 @@ function search() {
     var dates_array = []
     var current_day = start
     while(current_day <= end){
-        dates_array.push(new Date(current_day))
+        var newDate = new Date(current_day)
+        dates_array.push(newDate.getTime())
         current_day = current_day.addDays(1)
     }
-    console.log('search-dates:')
-    console.log(dates_array)
+    
     
 
     // check all the rooms that are free on all of these days and add them to available rooms
@@ -159,10 +158,10 @@ function search() {
     for ( var room of model.rooms) {
         var booked_dates = []
         for (var date of room.booked_dates){
-            booked_dates.push(date)
+            booked_dates.push(date.getTime())
             
         }
-        console.log(booked_dates)
+        
         for (var date of dates_array){
             if(booked_dates.includes(date)) break;
             else counter ++
@@ -206,7 +205,6 @@ function search() {
 function input_updater(input_field) {
     if (input_field.name == "startDato") {
         model.input.start_date = new Date (input_field.valueAsDate);
-        console.log(input_field.value)
     } else if (input_field.name == "sluttDato") {
         model.input.end_date = input_field.valueAsDate;
     } else if (input_field.name == "antallPersoner") {

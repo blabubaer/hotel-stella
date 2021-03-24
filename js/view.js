@@ -29,7 +29,6 @@ async function start() {
             
         }
     }
-    console.log(model.bookings[0].dates[1])
     updateView()
 }
 start()
