@@ -507,8 +507,20 @@ function searchBannerView(){
             <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}'>
             <label class="margin" for="sluttDato">Slutt Dato:</label>
             <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}'>
-            <label class="margin" for="antallPersoner">Antall personer:</label>  
+            <label class="margin" for="antallPersoner">Antall Voksene:</label>  
             <select id="personer" type="text" name="antallPersoner" onchange="input_updater(this)">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+          </select>
+          <label class="margin" for="antallPersoner">Antall Barn:</label>  
+            <select id="personer" type="text" name="antallPersoner" onchange="input_updater(this)">
+            <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
