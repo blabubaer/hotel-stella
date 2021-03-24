@@ -205,6 +205,8 @@ function search() {
 function input_updater(input_field) {
     if (input_field.name == "startDato") {
         model.input.start_date = new Date (input_field.valueAsDate);
+        var sluttDatoField = document.getElementById('sluttDatoField')
+        sluttDatoField.min = date_fixer(model.input.start_date)
     } else if (input_field.name == "sluttDato") {
         model.input.end_date = input_field.valueAsDate;
     } else if (input_field.name == "antallPersoner") {

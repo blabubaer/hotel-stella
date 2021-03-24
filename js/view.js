@@ -480,17 +480,33 @@ function updateSearchView() {
    app.innerHTML = html;
 }
 
+function date_fixer(date){
+    var today_day
+    if(date.getDate() < 10) {
+        today_day = '0'+ date.getDate()
+    }
+    else {
+        today_day = date.getDate()
+    }
+    var today_month
+    if(date.getMonth() < 9){
+        today_month = '0' + (date.getMonth() + 1) 
+    }
+    else {
+        today_month = date.getMonth() + 1
+    }
+    var today = date.getFullYear()+'-'+today_month+'-'+today_day
+    return today
+}
 
 function searchBannerView(){
-    var today = (new Date()).getMonth()+(new Date()).getDate()
-    console.log(today)
     let html =``;
     html += `
         <div class="searchField">    
             <label for="startDato">Start Dato:</label>
-            <input type="date" name="startDato" onchange="input_updater(this)">
+            <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}'>
             <label class="margin" for="sluttDato">Slutt Dato:</label>
-            <input type="date" name="sluttDato" onchange="input_updater(this)">
+            <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}'>
             <label class="margin" for="antallPersoner">Antall personer:</label>  
             <input type="text" name="antallPersoner" onchange="input_updater(this)">
             <button class="btn small" onclick="setSearchView()">Søk</button>
