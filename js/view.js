@@ -11,23 +11,19 @@ async function start() {
     var data = await databaseUpdate
     model.rooms = data.rooms
     model.users = data.users
-    model.bookings = data.bookings
-    console.log(typeof data.bookings)
     for (i=0; i< data.rooms.length; i++){
+        model.rooms[i].booked_dates = []
         if (data.rooms[i].booked_dates != undefined){            
             for (a  =  0; a  <  data.rooms[i].booked_dates.length;  a++) {
-                console.log(data.rooms[i].booked_dates[a])
+                    console.log(data.rooms[i].booked_dates[a])
                     model.rooms[i].booked_dates[a] = new Date(data.rooms[i].booked_dates[a])
                 }
         }
     }
-    for (i=0; i< data.bookings.length; i++){
-        if (data.bookings[i].dates != ''){            
-            for (a=0; a<data.bookings[i].dates.length;a++) {
-                    model.bookings[i].dates[a] = new Date(data.bookings[i].dates[a])
-                }
-            
-        }
+    model.bookings= []
+    console.log(data.bookings)
+    for (a in data.bookings){
+        model.bookings.push(data.bookings[a])
     }
     updateView()
 }
@@ -131,9 +127,6 @@ function updateAdminSearchOnBookingNr() {
     html += ` </div>`;
     app.innerHTML = html;
 }
-
-
-
 function updateAdminSearchOnDate() {
     let html = ``;
     html += viewHeader();
@@ -251,7 +244,7 @@ function updateAdminView() {
            
         if (firstTime) {
             firstTime = false;
-            dateString = new Date(aDate);
+            dateString = new Date();
             week.push(new Date(dateString));
             week.push(new Date(dateString.addDays(1)));
             week.push(new Date(dateString.addDays(2)));

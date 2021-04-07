@@ -42,10 +42,11 @@ function logout(){
 function book(roomId) {
     let bookings = [];
     bookings = model.bookings;
-    let date = new Date();
-    date.setMilliseconds(model.input.start_date);
+    let date = new Date(model.input.start_date);
+    console.log("date: " + model.input.start_date)
+   
     let endDate = new Date();
-    endDate.valueOf(model.input.end_date);
+    endDate = model.input.end_date.valueOf();
     var string = model.input.start_date;
 
     /* får error fordi room.bookings ikke finnes // need some work. funker når dataen i db finnes: nærmere bestemt når room har en booked dates.
@@ -60,7 +61,23 @@ function book(roomId) {
     }
     */
     //date.setDate(string.getDate());
+    for (let rom of model.rooms) { // need some work. funker når dataen i db finnes: nærmere bestemt når room har en booked dates. 
+        if (rom.room_id == roomId) {
+            if (rom.booked_dates) {
+                rom.booked_dates.push(date);
+                console.log(rom.booked_dates);
+                var rootRef = database.ref('rooms');
+                rootRef.set(model.rooms);
+            } else {
+                rom.booked_dates = []
+                rom.booked_dates.push(date);
+                console.log(rom.booked_dates);
+                var rootRef = database.ref('rooms');
+                rootRef.set(model.rooms);
+            }
 
+        }
+    }
     bookings.push({ //finished need the rest of the dates... 
         room_id: roomId,
         userId: model.page.current_user,
@@ -72,8 +89,8 @@ function book(roomId) {
     model.bookings = bookings;
 
     var rootRef = database.ref('bookings');
-    var newStoreRef = rootRef.push();
-    newStoreRef.set(model.bookings[model.bookings.length - 1]);
+   
+    rootRef.set(model.bookings);
 }
 
 function storePersonalia(){

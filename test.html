@@ -6,15 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        div {
-            margin: 10px 0 10px 0;
+        #base {
+            display: flex;
+        }
+        #base div {
+            margin: 10px 10px 10px 0;
             border: solid 1px;
+            max-width: 40%;
+            overflow-wrap: break-word;
         }
     </style>
 </head>
 <body>
-    <div id="model"></div>
-    <div id="db"></div>
+    <div id="base">
+        <div id="model"></div>
+        <div id="db"></div>
+    </div>
+    
     <button onclick="reset_db()">Reset</button>
 </body>
 <!-- The core Firebase JS SDK is always required and must be listed first -->
@@ -28,15 +36,16 @@
 <script>
     var modeldiv = document.getElementById("model")
     var dbdiv = document.getElementById("db")
-    var modelstring = JSON.stringify(model)    
-    var dbstring
+    var modelstring =''
+    for( a in model){
+        modelstring += `
+        <h4>${a}</h4>
+        <p>${JSON.stringify(model[a])}</p>`
+    }  
+    var dbstring =""
     modeldiv.innerHTML = modelstring
-    get_data()
     
-
-
-
-
+    get_data() 
 
     async function get_data() {
         var databaseUpdate = new Promise (function(resolve,reject){
@@ -45,9 +54,14 @@
           })
         })
         var data = await databaseUpdate
-        console.log(data)
-        dbstring =  data
-        dbdiv.innerHTML = JSON.stringify(dbstring)
+        for (b in data){
+            console.log(JSON.stringify(data[b]))
+            dbstring += `
+            <h4>${b}</h4>
+            <p>${JSON.stringify(data[b])}</p>
+            `
+        }
+        dbdiv.innerHTML = dbstring
     }
     function reset_db(){
         database.ref('bookings').set(
