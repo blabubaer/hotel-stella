@@ -12,10 +12,11 @@ async function start() {
     model.rooms = data.rooms
     model.users = data.users
     model.bookings = data.bookings
-
+    console.log(typeof data.bookings)
     for (i=0; i< data.rooms.length; i++){
-        if (data.rooms[i].booked_dates != ''){            
-            for (a=0; a<data.rooms[i].booked_dates.length;a++) {
+        if (data.rooms[i].booked_dates != undefined){            
+            for (a  =  0; a  <  data.rooms[i].booked_dates.length;  a++) {
+                console.log(data.rooms[i].booked_dates[a])
                     model.rooms[i].booked_dates[a] = new Date(data.rooms[i].booked_dates[a])
                 }
         }
@@ -274,15 +275,18 @@ function updateAdminView() {
         html += '<td>' + room.room_id + '</td>';
         for (let weekday of week) {
             hasRun = false;
-            for (let booking of room.booked_dates) {
-                booking = new Date(booking);
-                
-                console.log(weekday.toString() + booking.toString())
-                if (weekday.getDate().toString() == booking.getDate().toString()) {
-                    html += `<td class="booked">${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
-                    hasRun = true;
+            if (room.booked_dates != undefined) {
+                for (let booking of room.booked_dates) {
+                    booking = new Date(booking);
+
+                    console.log(weekday.toString() + booking.toString())
+                    if (weekday.getDate().toString() == booking.getDate().toString()) {
+                        html += `<td class="booked">${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
+                        hasRun = true;
+                    }
                 }
             }
+            
             if (!hasRun) {
                 html += `<td class="notBooked">${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
 

@@ -40,21 +40,40 @@ function logout(){
 }
 
 function book(roomId) {
-    let bookings = model.bookings;
+    let bookings = [];
+    bookings = model.bookings;
     let date = new Date();
-    var string = model.input.start_date
-    var roomBookedDates = model.rooms.booked_dates;
-    date.setDate(string.getDate());
-    roomBookedDates.push(date);
-    bookings.push({
+    date.setMilliseconds(model.input.start_date);
+    let endDate = new Date();
+    endDate.valueOf(model.input.end_date);
+    var string = model.input.start_date;
+
+    /* får error fordi room.bookings ikke finnes // need some work. funker når dataen i db finnes: nærmere bestemt når room har en booked dates.
+    for (let rom of model.rooms) { // need some work. 
+        if (rom.room_id == roomId) {
+
+            rom.booked_dates.push(date.valueOf());
+            console.log(rom.booked_dates);
+            var rootRef = database.ref('rooms');
+            rootRef.set(model.rooms);
+        }
+    }
+    */
+    //date.setDate(string.getDate());
+
+    bookings.push({ //finished need the rest of the dates... 
         room_id: roomId,
         userId: model.page.current_user,
-        date: date,
-        endDate: model.input.end_date,
+        dates: [date.valueOf()],
         num_pers: model.input.num_of_pers,
         booking_number: bookings.length,
     }
     )
+    model.bookings = bookings;
+
+    var rootRef = database.ref('bookings');
+    var newStoreRef = rootRef.push();
+    newStoreRef.set(model.bookings[model.bookings.length - 1]);
 }
 
 function storePersonalia(){
@@ -157,10 +176,14 @@ function search() {
     var counter = 0
     for ( var room of model.rooms) {
         var booked_dates = []
+        if (room.booked_dates != undefined) {
+       
         for (var date of room.booked_dates){
             booked_dates.push(date.getTime())
             
-        }
+                }
+
+        }  
         
         for (var date of dates_array){
             if(booked_dates.includes(date)) break;

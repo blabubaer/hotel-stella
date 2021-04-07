@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div {
+            margin: 10px 0 10px 0;
+            border: solid 1px;
+        }
+    </style>
+</head>
+<body>
+    <div id="model"></div>
+    <div id="db"></div>
+    <button onclick="reset_db()">Reset</button>
+</body>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+
+<!--TODO: Add SDKs for Firebase products that you want to use
+ https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+<script src="./js/database.js"></script>
+<script src="./js/model.js"></script>
+<script>
+    var modeldiv = document.getElementById("model")
+    var dbdiv = document.getElementById("db")
+    var modelstring = JSON.stringify(model)    
+    var dbstring
+    modeldiv.innerHTML = modelstring
+    get_data()
+    
+
+
+
+
+
+    async function get_data() {
+        var databaseUpdate = new Promise (function(resolve,reject){
+        database.ref().once('value', (snap) => {
+            resolve(snap.val())
+          })
+        })
+        var data = await databaseUpdate
+        console.log(data)
+        dbstring =  data
+        dbdiv.innerHTML = JSON.stringify(dbstring)
+    }
+    function reset_db(){
+        database.ref('bookings').set(
+            model.bookings
+        )
+        database.ref('prices').set(
+            model.prices
+        )
+    }
+</script>
+</html>
