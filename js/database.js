@@ -10,6 +10,8 @@ var firebaseConfig = {
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
-const database = firebase.database()
+const database = firebase.database() 
+
+//Bare for test, kan slette etterpå
 
 
