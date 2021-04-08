@@ -1,5 +1,4 @@
 let model = {
-    shopping_cart: {},
     input : {
         tempUser: '',
         tempPassw: '',
@@ -45,6 +44,7 @@ let model = {
         business: 1200,
         premium: 1500,
     },
+    booking_numbers: ["start",],
     bookings: [
         {
             room_id: 201,
@@ -70,7 +70,8 @@ let model = {
                 country: "Norway",
                 email: "chr.superstart@gmail.com",
                 tel_num: "+47 91166669",
-            }
+            },
+            cart: []
 
         },
         {
@@ -88,7 +89,8 @@ let model = {
                 email: "chr.superstart@gmail.com",
                 tel_num: "+47 91166669",
             },
-            list_of_bookings: []
+            list_of_bookings: [],
+            cart: []
 
         },
         {
@@ -105,7 +107,8 @@ let model = {
                 country: "Norway",
                 email: "chr.superstart@gmail.com",
                 tel_num: "+47 91166669",
-            }
+            },
+            cart: []
 
         },
         

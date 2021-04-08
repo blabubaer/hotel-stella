@@ -38,8 +38,58 @@ function logout(){
     model.page.current_user = 2; 
     setHomeView();
 }
-
+function put_in_cart(roomId){
+    var booking = {
+        room_id: roomId,
+        userId: model.page.current_user,
+        dates: [], 
+        num_of_pers: model.input.num_of_pers,
+        booking_number: 1, //needs to be set automatically
+    }
+    //get at list of all the dates between the start and end date
+    var start = model.input.start_date
+    var end = model.input.end_date
+    var dates_array = []
+    var current_day = start
+    while(current_day <= end){
+        var newDate = new Date(current_day)
+        dates_array.push(newDate.getTime())
+        current_day = current_day.addDays(1)
+    }
+    booking.dates = dates_array
+     
+    // Booking number creation
+    var booking_number = "start"
+    var possible= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    var check_point = true
+    while(check_point){
+        booking_number = ""
+        for (var i = 0; i < 5; i++){
+            booking_number += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        if(model.booking_numbers.includes(booking_number)) continue;
+        else {
+            booking.booking_number = booking_number
+            model.booking_numbers.push(booking_number)
+            check_point = false
+            database.ref('booking_numbers').set(model.booking_numbers)
+        }
+    }
+    for( user of model.users){
+        console.log(user)
+        if(user.userId === model.page.current_user){
+            if(user.cart) user.cart.push(booking);
+            else{
+                user.cart = [booking]
+                database.ref("users/"+user.userId).set(user)
+            }
+        }
+    }
+        
+}
 function book(roomId) {
+
+    /* 
     let bookings = [];
     bookings = model.bookings;
     let date = new Date(model.input.start_date);
@@ -49,7 +99,7 @@ function book(roomId) {
     endDate = model.input.end_date.valueOf();
     var string = model.input.start_date;
 
-    /* får error fordi room.bookings ikke finnes // need some work. funker når dataen i db finnes: nærmere bestemt når room har en booked dates.
+    får error fordi room.bookings ikke finnes // need some work. funker når dataen i db finnes: nærmere bestemt når room har en booked dates.
     for (let rom of model.rooms) { // need some work. 
         if (rom.room_id == roomId) {
 
@@ -94,31 +144,31 @@ function book(roomId) {
 }
 
 function storePersonalia(){
-    if(model.input.tempUserName != ''){
+    if (model.input.tempUserName != undefined && model.input.tempUserName != '') {
         model.users[model.page.current_user].username = model.input.tempUserName;
     }
-    if(model.input.tempPassw != ''){
+    if (model.input.tempPassw != undefined && model.input.tempPassw != '') {
         model.users[model.page.current_user].password = model.input.tempPassw;
     }
-    if(model.input.tempFirstName != ''){
+    if (model.input.tempFirstName != undefined && model.input.tempFirstName != '') {
         model.users[model.page.current_user].personalia.first_name = model.input.tempFirstName;
     }
-    if(model.input.tempLastName != ''){
+    if (model.input.tempLastName != undefined && model.input.tempLastName != '') {
         model.users[model.page.current_user].personalia.last_name = model.input.tempLastName;
     }
-    if(model.input.tempStreet != ''){
+    if (model.input.tempStreet != undefined && model.input.tempStreet != '') {
         model.users[model.page.current_user].personalia.street = model.input.tempStreet;
     }
-    if(model.input.tempCity != ''){
+    if (model.input.tempCity != undefined && model.input.tempCity != '') {
         model.users[model.page.current_user].personalia.city = model.input.tempCity;
     }
-    if(model.input.tempCountry != ''){
+    if (model.input.tempCountry != undefined && model.input.tempCountry != '') {
         model.users[model.page.current_user].personalia.country = model.input.tempCountry;
     }
-    if(model.input.tempEmail != ''){
+    if (model.input.tempEmail != undefined && model.input.tempEmail != '') {
         model.users[model.page.current_user].personalia.email = model.input.tempEmail;
     }
-    if(model.input.tempTel != ''){
+    if (model.input.tempTel != undefined && model.input.tempTel != '') {
         model.users[model.page.current_user].personalia.tel_num = model.input.tempTel;
     }
     updateView();
@@ -176,7 +226,7 @@ function search() {
     //var kids = model.input.num_of_kids
     var num_rooms = model.input.num_of_rooms
     var available_rooms = []
-    var fitting_rooms = []
+    //var fitting_rooms = []
 
     //get at list of all the dates between the start and end date
     var dates_array = []

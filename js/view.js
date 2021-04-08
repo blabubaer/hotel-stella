@@ -25,6 +25,12 @@ async function start() {
     for (a in data.bookings){
         model.bookings.push(data.bookings[a])
     }
+
+    //booking-numbers keeping them updated
+    model.booking_numbers = data.booking_number
+    database.ref('booking_numbers').on('value', (snap) => {
+        model.booking_numbers = snap.val();
+    })
     updateView()
 }
 start()
@@ -48,6 +54,8 @@ function updateView() {
         updateAdminSearchOnDate();
     } else if (model.page.page_pos == 'Admin søk på Booking nr') {
         updateAdminSearchOnBookingNr();
+    } else if (model.page.page_pos = 'Vis Booking') {
+        updateShowBookingView();
     }
 }
 function setHomeView(){
@@ -85,6 +93,49 @@ function setAdminSearchOnBookingNr() {
     model.page.page_pos = 'Admin søk på Booking nr';
     updateView();
 }
+function setShowBookingView() {
+    model.page.page_pos = 'Vis Booking';
+    updateView();
+}
+
+function updateShowBookingView() {
+    let html;
+    html += viewHeader();
+
+    for (let booking of model.bookings) {
+        if (booking.booking_number == model.input.selectedBookingNr) {
+            html += '<div class="bookingnrWrapper">';
+            for (let rom of model.rooms) {
+                if (booking.room_id == rom.room_id) {
+                    imgSrc = rom.img_url;
+                }
+            }
+            html += `<div class="hero"><img src='${imgSrc}'></div>`;
+            html += '<div class="bookingnrContentWrapper"  >';
+            for (let room of model.rooms) {
+                if (room.room_id == booking.room_id) {
+                    html += `<h2>${room.room_type}</h2>`;
+                    html += `<p>${room.room_prices}</p>`;
+                }
+            }
+            html += `<p>Bookingnr: ${booking.booking_number}</p>`;
+            html += `<p>Romnr: ${booking.room_id}</p>`;
+            html += `<p>Antall personer: ${booking.num_pers}</p>`;
+            html += '<p>Reserverte datoer: ';
+            for (let date of booking.dates) {
+                date = new Date(date);
+                html += date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear() + ' -> ';
+            }
+            html += '</p>';
+            html += '<button class="deleteButton">Slett reservasjon</button>';
+            html += '<button class="alterButton">Endre reservasjon</button>';
+            html += '</div></div>';
+        }
+    }
+    html += footerView(); 
+    app.innerHTML = html;
+}
+
 
 function updateAdminSearchOnBookingNr() {
     let html = ``;
@@ -235,30 +286,18 @@ function updateAdminView() {
 
     let row1 = "";
     let row2 = "";
-    for (let date of dates) {// alle datoene i modelen sortert i stigene rekkefølge
-        //aBookedDate.setDate(date.date.getDate());
-        
-        for (let aDate of date.dates) {
-            
-            
-           
-        if (firstTime) {
-            firstTime = false;
-            dateString = new Date();
-            week.push(new Date(dateString));
-            week.push(new Date(dateString.addDays(1)));
-            week.push(new Date(dateString.addDays(2)));
-            week.push(new Date(dateString.addDays(3)));
-            week.push(new Date(dateString.addDays(4))); /* Legger til en dato for hele uken */
-            week.push(new Date(dateString.addDays(5)));
-            week.push(new Date(dateString.addDays(6)));
-            week.push(new Date(dateString.addDays(7)));
-            for (let weekday of week) {
-                html += '<th>' + weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear() + '</th>';
-            }
-                }
-        }   
-        //om rooms er tom - print ut ei rad med romNr osv
+
+    dateString = new Date();
+    week.push(dateString);
+    week.push(new Date(dateString.addDays(1)));
+    week.push(new Date(dateString.addDays(2)));
+    week.push(new Date(dateString.addDays(3)));
+    week.push(new Date(dateString.addDays(4))); /* Legger til en dato for hele uken */
+    week.push(new Date(dateString.addDays(5)));
+    week.push(new Date(dateString.addDays(6)));
+    week.push(new Date(dateString.addDays(7)));
+    for (let weekday of week) {
+        html += '<th>' + weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear() + '</th>';
     }
     let hasRun = false;
     //loop gjennom datoene fra model.bookings, og sjekk om dem er like
@@ -274,14 +313,14 @@ function updateAdminView() {
 
                     console.log(weekday.toString() + booking.toString())
                     if (weekday.getDate().toString() == booking.getDate().toString()) {
-                        html += `<td class="booked">${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
+                        html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
                         hasRun = true;
                     }
                 }
             }
             
             if (!hasRun) {
-                html += `<td class="notBooked">${weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear()}</td>`;
+                html += `<td class="notBooked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
 
             }
 
@@ -378,7 +417,7 @@ function updateUserpanelView() {
             html += `<div id="bookings">`;
                     for(let booking of model.bookings){
                         if(booking.userId == model.page.current_user){
-                            html+= '<div class="booking">';
+                            html += `<div onclick="model.input.selectedBookingNr = ${booking.booking_number}; setShowBookingView(); " class="booking">`;
                             html += `<br>`;
                             for (let room of model.rooms){
                                 if (room.room_id == booking.room_id){ // alle rom med rom nr fra booking
@@ -446,15 +485,15 @@ function updateSearchView() {
    for (var room of model.page.search_results) {
      var img_url = "";
      var room_price = 0;
-     if (room.room_type == "standart") {
+     if (room.room_type == "Standart") {
        img_url =
          "https://amorgoshotel.com/wp-content/uploads/2014/12/Amorgos-Standard-Room1-e1464286427430.jpg";
        room_price = model.prices.standart;
-     } else if (room.room_type == "business") {
+     } else if (room.room_type == "Business") {
        img_url =
          "https://t-cf.bstatic.com/images/hotel/max1280x900/557/55724294.jpg";
        room_price = model.prices.business;
-     } else if (room.room_type == "premium") {
+     } else if (room.room_type == "Premium") {
        img_url =
          "https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg";
        room_price = model.prices.premium;
@@ -463,10 +502,10 @@ function updateSearchView() {
         <div class="card">
             <p>${room.room_id}
             <div id="room.room_id">
-            <img src=${img_url} alt="Standard" width="350" height="200">
+            <img src='${img_url}' alt="Standard" width="350" height="200">
             <p>Room Type: ${room.room_type}</p>
             <p>Price: ${room_price}</p>
-            <button onclick="book(${room.room_id})" class="btn">Velg</button>
+            <button onclick="put_in_cart(${room.room_id})" class="btn">Velg</button>
             </div>
         </div>
         
