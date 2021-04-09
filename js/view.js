@@ -27,10 +27,13 @@ async function start() {
     }
 
     //booking-numbers keeping them updated
-    model.booking_numbers = data.booking_number
-    database.ref('booking_numbers').on('value', (snap) => {
-        model.booking_numbers = snap.val();
-    })
+    if (data.booking_number) {
+        model.booking_numbers = data.booking_number;
+    
+        database.ref('booking_numbers').on('value', (snap) => {
+            model.booking_numbers = snap.val();
+        })
+    }
     updateView()
 }
 start()
@@ -54,8 +57,10 @@ function updateView() {
         updateAdminSearchOnDate();
     } else if (model.page.page_pos == 'Admin søk på Booking nr') {
         updateAdminSearchOnBookingNr();
-    } else if (model.page.page_pos = 'Vis Booking') {
+    } else if (model.page.page_pos == 'Vis Booking') {
         updateShowBookingView();
+    } else if (model.page.page_pos == 'cart') {
+        updateCartView()
     }
 }
 function setHomeView(){
@@ -135,7 +140,31 @@ function updateShowBookingView() {
     html += footerView(); 
     app.innerHTML = html;
 }
+function updateCartView(){
+    var html = ''
+    var chosen_room
+    html += viewHeader();
+    for (booking of model.users[model.page.current_user].cart){
+        for (room of model.rooms){
+            if (room.room_id == booking.room_id) chosen_room = room
+        }
+        html +=`
+            <div class="card">
+            <p>${room.room_id}
+            <div id="booking.room_id">
+            <img src='${room.img_url}' alt="Standard" width="350" height="200">
+            <p>Room Type: ${room.room_type}</p>
+            <p>Price: ${model.prices[room.room_type]}</p>
+            <button onclick="book(${room.room_id})" class="btn">Kjøpe</button>
+            </div>
+            </div>
+    ` 
+    }
+    
 
+    html += footerView();
+    app.innerHTML = html
+}
 
 function updateAdminSearchOnBookingNr() {
     let html = ``;
@@ -589,9 +618,50 @@ function viewHeader(){
 function footerView(){
     let html = ``;
     html += `<div id="footer">
-    <h2>Stellas Hotel</h2>
-    <p>informasjon om hotellet</p>
-    </div>`;
+        <div class="footer-content">
+
+            <div class="footer-section about">
+                <h1 class="logo-text"><span>Hotel</span>Stella</h1>
+                <p>
+                   Hotel Stella ligger i Skien og er Byens vakkreste hotel
+                </p>
+               <div class="contact">
+                    <span><i class="fas fa-phone"></i> &nbsp; 112 113 110 </span>
+                    <span><i class="fas fa-envelope"></i> &nbsp; Hotel@Stella.no </span>
+                </div>
+                <div class="sosialmedia">
+                    <a herf="#"><i class="fab fa-facebook"></i></a>
+                    <a herf="#"><i class="fab fa-instagram"></i></a>
+                    <a herf="#"><i class="fab fa-twitter"></i></a>  
+                </div>
+            </div>
+
+            <div class="footer-section links">
+                <h2>Linker</h2>
+                <br>
+                <ul>
+                    <a herf="#"><li>Home</li></a>
+                    <a herf="#"><li>Booking</li></a>
+                    <a herf="#"><li>Login</li></a>
+                </ul>
+                </div>
+
+            <div class="footer-section contact-form></div>
+                <h2>Kontakt oss</h2>
+                <br>
+                <from action="index.html" method="post">
+                    <input type="email" name="email" class="text-input contact-input" placeholder="Din epost adresse">
+                    <textarea name="message"  class="text-input contact-input" placeholder="Skriv her..."></textarea>
+                    <button type="submit" class="btn btn-big">
+                    Send
+                    </button>
+                </form>
+        </div>
+
+    </div>
+        <div id="footer-bottom">
+            &copy; Get Academy | Marten, Borgar og Christoffer
+         </div>`;
     return html
 }
 

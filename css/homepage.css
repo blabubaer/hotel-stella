@@ -44,7 +44,64 @@ h2{
 }
 
 #footer {
-    margin-top: 50px;
+    background: #303036;
+    color: #d3d3d3;
+    height: 250px;
+    position: relative;
+}
+
+.footer-content {
+    border: 1px solid red;
+    height: 250px;
+    display: flex;
+}
+
+    .footer-content .footer-section {
+        flex: 1;
+        padding: 25px;
+        border: 1px solid white;
+    }
+
+    .footer-content h1,
+    .footer-content h2 {
+        color: white;
+    }
+
+    .footer-content .about h1 span {
+        color: #a7ef0b;
+    }
+
+    .footer-content .about .contact span {
+        display: block;
+        font-size: 1.1em;
+        margin-bottom: 8px;
+    }
+
+    .footer-content .links ul a {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        transition: all .3s;
+        cursor: pointer;
+    }
+
+        .footer-content .links ul a:hover {
+            color: white;
+            margin-left: 15px;
+            transition: all .3s;
+            cursor: pointer;
+        }
+
+#footer-bottom {
+    background: #343a40;
+    color: #686868;
+    height: 30px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    bottom: 0px;
+    left: 0px;
+    padding-top: 5px;
 }
 
 .margin {

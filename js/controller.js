@@ -85,6 +85,8 @@ function put_in_cart(roomId){
             }
         }
     }
+    model.page.page_pos = 'cart'
+    updateView()
         
 }
 function book(roomId) {
