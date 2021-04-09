@@ -15,13 +15,11 @@ async function start() {
         model.rooms[i].booked_dates = []
         if (data.rooms[i].booked_dates != undefined){            
             for (a  =  0; a  <  data.rooms[i].booked_dates.length;  a++) {
-                    console.log(data.rooms[i].booked_dates[a])
                     model.rooms[i].booked_dates[a] = new Date(data.rooms[i].booked_dates[a])
                 }
         }
     }
     model.bookings= []
-    console.log(data.bookings)
     for (a in data.bookings){
         model.bookings.push(data.bookings[a])
     }
@@ -102,6 +100,10 @@ function setShowBookingView() {
     model.page.page_pos = 'Vis Booking';
     updateView();
 }
+function setCart() {
+    model.page.page_pos='cart'
+    updateView()
+}
 
 function updateShowBookingView() {
     let html;
@@ -144,22 +146,34 @@ function updateCartView(){
     var html = ''
     var chosen_room
     html += viewHeader();
-    for (booking of model.users[model.page.current_user].cart){
-        for (room of model.rooms){
-            if (room.room_id == booking.room_id) chosen_room = room
+    if(model.page.current_user.cart){
+        for (booking of model.users[model.page.current_user].cart){
+            for (room of model.rooms){
+                if (room.room_id == booking.room_id){
+                    chosen_room = room;
+                    html +=`
+                        <div class="card">
+                        <p>${room.room_id}
+                        <div id="booking.room_id">
+                        <img src='${room.img_url}' alt="Standard" width="350" height="200">
+                        <p>Room Type: ${room.room_type}</p>
+                        <p>Price: ${model.prices[room.room_type]}</p>
+                        <p>Startdato: ${new Date(booking.dates[0])}</p>
+                        <p>Sluttdato: ${new Date(booking.dates[1])}
+                        <button onclick="book(${room.room_id})" class="btn">Kjøpe</button>
+                        </div>
+                        </div>
+                        `
+                } 
+                }
+            
+                 
         }
-        html +=`
-            <div class="card">
-            <p>${room.room_id}
-            <div id="booking.room_id">
-            <img src='${room.img_url}' alt="Standard" width="350" height="200">
-            <p>Room Type: ${room.room_type}</p>
-            <p>Price: ${model.prices[room.room_type]}</p>
-            <button onclick="book(${room.room_id})" class="btn">Kjøpe</button>
-            </div>
-            </div>
-    ` 
     }
+    else {
+        html +=`<h1>Your shopping Cart is empty</h1>`
+    }
+    
     
 
     html += footerView();
@@ -339,8 +353,6 @@ function updateAdminView() {
             if (room.booked_dates != undefined) {
                 for (let booking of room.booked_dates) {
                     booking = new Date(booking);
-
-                    console.log(weekday.toString() + booking.toString())
                     if (weekday.getDate().toString() == booking.getDate().toString()) {
                         html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
                         hasRun = true;
@@ -533,7 +545,7 @@ function updateSearchView() {
             <div id="room.room_id">
             <img src='${img_url}' alt="Standard" width="350" height="200">
             <p>Room Type: ${room.room_type}</p>
-            <p>Price: ${room_price}</p>
+            <p>Price: ${model.prices[room.room_type]}</p>
             <button onclick="put_in_cart(${room.room_id})" class="btn">Velg</button>
             </div>
         </div>
@@ -601,17 +613,17 @@ function searchBannerView(){
 }
 
 function viewHeader(){
-    let html = '';
+    let html = '<div id="header_overdiv">';
     html += `<div id="header"><h1 onclick="setHomeView()">Hotell Stella - ${model.page.page_pos}</h1>`;
-    if(model.page.current_user == '2'){
-        html += `<div class="logout"><span onclick="setLoginView()">login</span></div></div>`;
+    if(model.users[model.page.current_user].role == 'guest'){
+        html += `<div class="logout"><span onclick="setLoginView()">Login</span></div></div>`;
 
-    }else if(model.page.current_user == 0){
+    }else if(model.users[model.page.current_user].role == 'admin' || model.users[model.page.current_user].role == 'user'){
         html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="setAdminPanel()">admin</span><span onclick="logout()">logout</span></div></div>`;
   
-    }else{
-        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="logout()">logout</span></div></div>`;
     }
+    html += `<div onclick="setCart()">Handlevogn</div>`
+    html +=`</div>`
     return html
 }
 

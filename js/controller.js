@@ -76,14 +76,13 @@ function put_in_cart(roomId){
         }
     }
     for( user of model.users){
-        console.log(user)
         if(user.userId === model.page.current_user){
             if(user.cart) user.cart.push(booking);
             else{
-                user.cart = [booking]
-                database.ref("users/"+user.userId).set(user)
+                user.cart = [booking]                
             }
         }
+        database.ref("users/"+user.userId).set(user)
     }
     model.page.page_pos = 'cart'
     updateView()
@@ -117,13 +116,11 @@ function book(roomId) {
         if (rom.room_id == roomId) {
             if (rom.booked_dates) {
                 rom.booked_dates.push(date);
-                console.log(rom.booked_dates);
                 var rootRef = database.ref('rooms');
                 rootRef.set(model.rooms);
             } else {
                 rom.booked_dates = []
                 rom.booked_dates.push(date);
-                console.log(rom.booked_dates);
                 var rootRef = database.ref('rooms');
                 rootRef.set(model.rooms);
             }

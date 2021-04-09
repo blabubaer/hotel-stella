@@ -40,9 +40,9 @@ let model = {
         }
     ],
     prices : {
-        standart : 1000,
-        business: 1200,
-        premium: 1500,
+        'Standart' : 1000,
+        'Business': 1200,
+        'Premium': 1500,
     },
     booking_numbers: ["start",],
     bookings: [
