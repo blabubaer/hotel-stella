@@ -1,4 +1,3 @@
-
 let app = document.getElementById("app");
 
 async function start() {
@@ -134,7 +133,7 @@ function updateShowBookingView() {
                 html += date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear() + ' -> ';
             }
             html += '</p>';
-            html += '<button class="deleteButton">Slett reservasjon</button>';
+            html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
             html += '<button class="alterButton">Endre reservasjon</button>';
             html += '</div></div>';
         }
@@ -146,7 +145,7 @@ function updateCartView(){
     var html = ''
     var chosen_room
     html += viewHeader();
-    if(model.page.current_user.cart){
+    if(model.users[model.page.current_user].cart){
         for (booking of model.users[model.page.current_user].cart){
             for (room of model.rooms){
                 if (room.room_id == booking.room_id){
@@ -159,8 +158,9 @@ function updateCartView(){
                         <p>Room Type: ${room.room_type}</p>
                         <p>Price: ${model.prices[room.room_type]}</p>
                         <p>Startdato: ${new Date(booking.dates[0])}</p>
-                        <p>Sluttdato: ${new Date(booking.dates[1])}
+                        <p>Sluttdato: ${new Date(booking.dates[booking.dates.length-1])}</p>
                         <button onclick="book(${room.room_id})" class="btn">Kjøpe</button>
+                        <button onclick="delete_from_cart('${booking.booking_number}')" class="btn">Fjern fra Handlevogn</button>
                         </div>
                         </div>
                         `
