@@ -110,44 +110,47 @@ function delete_from_cart(bookingnr){
     
 
 }
-function deleteBooking() {
+function deleteBooking(){
     let booked_dates = []
     let bookingId = model.input.selectedBookingNr;
     let roomNr
-
-    for (let a = 0; a < model.bookings.length; a++) {
-        if (model.bookings[a].booking_number == model.input.selectedBookingNr) {
-
+   
+    for(let a=0; a<model.bookings.length; a++){
+       if(model.bookings[a].booking_number == model.input.selectedBookingNr){
+           
             roomNr = model.bookings[a].room_id;
-            if (model.bookings[a].dates != undefined) {
-                for (let date of model.bookings[a].dates) {
+            if(model.bookings[a].dates != undefined){
+                for(let date of model.bookings[a].dates){
                     booked_dates.push(date)
                 }
             }
-
-            for (let room of model.rooms) {
-                if (room.room_id == roomNr) {
-                    for (let bookingdate of model.bookings[a].dates) {
-                        for (var i = 0; i < room.booked_dates.length; i++) {
-
-                            bookingdate = new Date(bookingdate);
-                            let rom_bookingdate = new Date(room.booked_dates[i]);
-                            console.log(bookingdate + ":" + room.booked_dates[i])
-                            if (bookingdate === rom_bookingdate) {
-                                console.log(booked_date);
-                                model.room.booked_dates.splice(i, 1)
+            
+            for(let z =0; z<model.rooms.length; z++){
+              
+                if(model.rooms[z].room_id == roomNr){
+                   for(let bookingdate of model.bookings[a].dates){
+                        for(var i =0; i<model.rooms[z].booked_dates.length; i++){
+                            
+                           bookingdate = new Date(bookingdate);
+                           let rom_bookingdate = new Date(model.rooms[z].booked_dates[i]);
+                           
+                            if(bookingdate.getTime() === rom_bookingdate.getTime()){
+                               
+                                model.rooms[z].booked_dates.splice(i, 1)
+                                var roomsRef = database.ref('rooms');
+                                roomsRef.set(model.rooms);
                             }
                         }
-                    }
-
-
-
+                   }
+                        
+                        
+                  
                 }
             }
             model.bookings.splice(a, 1);
 
             var rootRef = database.ref('bookings');
-
+   
             rootRef.set(model.bookings);
 
 
