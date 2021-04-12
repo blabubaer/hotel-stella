@@ -168,12 +168,20 @@ function book() {
                 }
             }
         }
+        if(model.users[model.page.current_user].list_of_bookings){
+            model.users[model.page.current_user].list_of_bookings.push(booking)
+        }
+        else{
+            model.users[model.page.current_user].list_of_bookings = [booking]
+        }
+        
     }
     // emptying cart
     model.users[model.page.current_user].cart = []
     //updating database
     database.ref('bookings').set(model.bookings)
     database.ref('users').set(model.users)
+    database.ref('rooms').set(model.rooms)
 
     //needs further connection to next side!!!!!
 
@@ -225,10 +233,9 @@ function newUser(){
         let currentUser = model.users.length;
         model.page.error = '';
         model.users.push({
-            username: model.input.tempUserName,
             password: model.input.tempPassw,
             role: 'user',
-            userId: model.users.length,
+            userId: model.userId_counter,
             personalia: {
                 first_name: model.input.tempFirstName,
                 last_name: model.input.tempLastName,
@@ -242,6 +249,11 @@ function newUser(){
         });
         model.page.current_user = currentUser;
         model.page.page_pos = 'login';
+        model.userId_counter ++;
+        //updating database
+        database.ref('users').set(model.users);
+        database.ref('userId_counter').set(model.userId_counter);
+
         updateView();
     } else if (!validEmail) {
         model.page.error = 'Eposten ' + model.input.tempEmail + ' er ikke korrekt ';

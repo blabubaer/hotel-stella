@@ -31,6 +31,9 @@ async function start() {
             model.booking_numbers = snap.val();
         })
     }
+    //UserID_counter
+    model.userId_counter = data.userId_counter
+
     updateView()
 }
 start()
@@ -456,7 +459,7 @@ function updateUserpanelView() {
             html += `<div id="bookings">`;
                     for(let booking of model.bookings){
                         if(booking.userId == model.page.current_user){
-                            html += `<div onclick="model.input.selectedBookingNr = ${booking.booking_number}; setShowBookingView(); " class="booking">`;
+                            html += `<div onclick="model.input.selectedBookingNr = '${booking.booking_number}'; setShowBookingView(); " class="booking">`;
                             html += `<br>`;
                             for (let room of model.rooms){
                                 if (room.room_id == booking.room_id){ // alle rom med rom nr fra booking
@@ -624,7 +627,7 @@ function viewHeader(){
         html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="setAdminPanel()">admin </span><span onclick="logout()"> logout</span></div></div>`;
   
     }
-    else if(model.user[model.page.current_user].role == 'user'){
+    else if(model.users[model.page.current_user].role == 'user'){
         html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name} </span><span onclick="logout()"> logout </span> <span onclick="setCart()"> Handlevogn</span></div></div>`;
     }
 
