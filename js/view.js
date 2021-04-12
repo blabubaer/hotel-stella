@@ -145,7 +145,7 @@ function updateCartView(){
     var html = ''
     var chosen_room
     html += viewHeader();
-    if(model.users[model.page.current_user].cart){
+    if(model.users[model.page.current_user].cart && model.users[model.page.current_user].cart != []){
         for (booking of model.users[model.page.current_user].cart){
             for (room of model.rooms){
                 if (room.room_id == booking.room_id){
@@ -159,7 +159,6 @@ function updateCartView(){
                         <p>Price: ${model.prices[room.room_type]}</p>
                         <p>Startdato: ${new Date(booking.dates[0])}</p>
                         <p>Sluttdato: ${new Date(booking.dates[booking.dates.length-1])}</p>
-                        <button onclick="book(${room.room_id})" class="btn">Kjøpe</button>
                         <button onclick="delete_from_cart('${booking.booking_number}')" class="btn">Fjern fra Handlevogn</button>
                         </div>
                         </div>
@@ -174,7 +173,7 @@ function updateCartView(){
         html +=`<h1>Your shopping Cart is empty</h1>`
     }
     
-    
+    html += `<button onclick="book()" class="btn">Kjøpe</button>`
 
     html += footerView();
     app.innerHTML = html
@@ -221,6 +220,7 @@ function updateAdminSearchOnBookingNr() {
     html += ` </div>`;
     app.innerHTML = html;
 }
+
 function updateAdminSearchOnDate() {
     let html = ``;
     html += viewHeader();
@@ -301,7 +301,6 @@ function updateAdminSearchOnDate() {
     html += ` </div>`;
     app.innerHTML = html;
 }
-
 
 function updateAdminView() {
     let html = ``;
@@ -421,7 +420,6 @@ function updateNewUserView(){
     app.innerHTML = html;
 }
 
-
 function updateUserpanelView() {
     let page = model.page;
     let html = '';
@@ -500,6 +498,7 @@ function updateLoginView() {
             html += footerView(); 
     app.innerHTML = html;
 }
+
 function homepageview() {
     let html = '';
     
@@ -515,7 +514,6 @@ function homepageview() {
             html += footerView(); 
     app.innerHTML = html;
 }
-
 
 function updateSearchView() {
   let html = ``;
@@ -546,13 +544,17 @@ function updateSearchView() {
             <img src='${img_url}' alt="Standard" width="350" height="200">
             <p>Room Type: ${room.room_type}</p>
             <p>Price: ${model.prices[room.room_type]}</p>
-            <button onclick="put_in_cart(${room.room_id})" class="btn">Velg</button>
+            <button onclick="put_in_cart(${room.room_id})" class="btn">Satt i handlevogn</button>
             </div>
         </div>
         
         `;
    }
-
+   if(model.users[model.page.current_user].cart && model.users[model.page.current_user].cart.length != 0){
+        html +=`
+        <button onclick="setCart()">Til Handlevogn</button>
+        `
+   }
    html += footerView();
    app.innerHTML = html;
 }
@@ -616,13 +618,16 @@ function viewHeader(){
     let html = '<div id="header_overdiv">';
     html += `<div id="header"><h1 onclick="setHomeView()">Hotell Stella - ${model.page.page_pos}</h1>`;
     if(model.users[model.page.current_user].role == 'guest'){
-        html += `<div class="logout"><span onclick="setLoginView()">Login</span></div></div>`;
+        html += `<div class="logout"><span onclick="setLoginView()">Login </span><span> Guest </span><span onclick="setCart()"> Handlevogn</span></div></div>`;
 
-    }else if(model.users[model.page.current_user].role == 'admin' || model.users[model.page.current_user].role == 'user'){
-        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="setAdminPanel()">admin</span><span onclick="logout()">logout</span></div></div>`;
+    }else if(model.users[model.page.current_user].role == 'admin'){
+        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="setAdminPanel()">admin </span><span onclick="logout()"> logout</span></div></div>`;
   
     }
-    html += `<div onclick="setCart()">Handlevogn</div>`
+    else if(model.user[model.page.current_user].role == 'user'){
+        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name} </span><span onclick="logout()"> logout </span> <span onclick="setCart()"> Handlevogn</span></div></div>`;
+    }
+
     html +=`</div>`
     return html
 }

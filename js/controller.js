@@ -84,7 +84,6 @@ function put_in_cart(roomId){
         }
         database.ref("users/"+user.userId).set(user)
     }
-    model.page.page_pos = 'cart'
     updateView()
         
 }
@@ -158,58 +157,26 @@ function deleteBooking(){
         }
     }
 }
-function book(roomId) {
-
-    /* 
-    let bookings = [];
-    bookings = model.bookings;
-    let date = new Date(model.input.start_date);
-    console.log("date: " + model.input.start_date)
-   
-    let endDate = new Date();
-    endDate = model.input.end_date.valueOf();
-    var string = model.input.start_date;
-
-    får error fordi room.bookings ikke finnes // need some work. funker når dataen i db finnes: nærmere bestemt når room har en booked dates.
-    for (let rom of model.rooms) { // need some work. 
-        if (rom.room_id == roomId) {
-
-            rom.booked_dates.push(date.valueOf());
-            console.log(rom.booked_dates);
-            var rootRef = database.ref('rooms');
-            rootRef.set(model.rooms);
-        }
-    }
-    */
-    //date.setDate(string.getDate());
-    for (let rom of model.rooms) { // need some work. funker når dataen i db finnes: nærmere bestemt når room har en booked dates. 
-        if (rom.room_id == roomId) {
-            if (rom.booked_dates) {
-                rom.booked_dates.push(date);
-                var rootRef = database.ref('rooms');
-                rootRef.set(model.rooms);
-            } else {
-                rom.booked_dates = []
-                rom.booked_dates.push(date);
-                var rootRef = database.ref('rooms');
-                rootRef.set(model.rooms);
+function book() {
+    //adding booking from cart to bookings and booked_dates of rooms
+    for (booking of model.users[model.page.current_user].cart) {
+        model.bookings.push(booking)
+        for(room of model.rooms){
+            if (room.room_id == booking.room_id){
+                for(date of booking.dates){
+                    room.booked_dates.push(date)
+                }
             }
-
         }
     }
-    bookings.push({ //finished need the rest of the dates... 
-        room_id: roomId,
-        userId: model.page.current_user,
-        dates: [date.valueOf()],
-        num_pers: model.input.num_of_pers,
-        booking_number: bookings.length,
-    }
-    )
-    model.bookings = bookings;
+    // emptying cart
+    model.users[model.page.current_user].cart = []
+    //updating database
+    database.ref('bookings').set(model.bookings)
+    database.ref('users').set(model.users)
 
-    var rootRef = database.ref('bookings');
-   
-    rootRef.set(model.bookings);
+    //needs further connection to next side!!!!!
+
 }
 
 function storePersonalia(){
@@ -372,7 +339,3 @@ function input_updater(input_field) {
         model.input.num_of_pers = parseInt(input_field.value);
     }
   }
-
-function choose_booking() {
-    
-}
