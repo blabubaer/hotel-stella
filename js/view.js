@@ -529,6 +529,13 @@ function updateSearchView() {
 
     html += viewHeader();
     html += searchBannerView();
+
+    if(model.page.search_results.length == 0){
+        html += `
+        <h1>${model.page.error}</h1>
+        `
+
+    }
     //looping through the search results
     for (var room of model.page.search_results) {
         var img_url = "";
@@ -612,20 +619,36 @@ function searchBannerView() {
             <label class="margin" for="sluttDato">Slutt Dato:</label>
             <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${enddate}">
             <label class="margin" for="antallPersoner">Antall Voksene:</label>  
-            <select id="personer" type="text" name="antallPersoner" onchange="input_updater(this)">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
+            <select id="personer" type="text" name="antallPersoner" onchange="input_updater(this)">`;
+            for (i = 1; i<9;i++){
+                if(model.input.num_of_pers == i){
+                    html += `
+                        <option value="${i}" selected="selected">${i}</option>
+                        `;
+                }
+                else {
+                    html += `
+                    <option value="${i}">${i}</option>
+                    `;
+                };
+            };
+            html+=`
             </select>
             <label class="margin" for="antallPersoner">Antall rom:</label>  
-            <select id="romvelger" type="text" name="antallrom" onchange="input_updater(this)">
-            <option value= "1">1</option>
-            </select>
+            <select id="romvelger" type="text" name="antallrom" onchange="input_updater(this)">`
+            for (i=1; i<=model.input.num_of_pers; i++){
+                if(model.input.num_of_rooms == i){
+                    html += `
+                        <option value="${i}" selected="selected">${i}</option>
+                        `
+                }
+                else {
+                    html += `
+                    <option value="${i}">${i}</option>
+                    `
+                }
+            }
+            html+=`</select>
             <button class="btn small" onclick="setSearchView()">Søk</button>
             </div>`;
     return html

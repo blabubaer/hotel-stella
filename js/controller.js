@@ -282,6 +282,8 @@ function search() {
     var num_rooms = model.input.num_of_rooms
     var available_rooms = []
     //var fitting_rooms = []
+    model.page.error = ""
+    model.page.search_results = []
 
     //get at list of all the dates between the start and end date
     var dates_array = []
@@ -298,10 +300,14 @@ function search() {
     var counter = 0
     for ( var room in model.rooms) {
         var booked_dates = []
-        if (model.rooms[room].booked_dates != undefined) {
+        if (model.rooms[room].booked_dates == undefined){
+            available_rooms.push(model.rooms[room]) 
+            continue
+        }
+        else{
        
             for (var date of model.rooms[room].booked_dates){
-                booked_dates.push(date.getTime())
+                booked_dates.push(date)
                 
             }
 
@@ -321,10 +327,16 @@ function search() {
         tot_beds += room.beds
     }
     //available_rooms empty
-    if(available_rooms.length === 0) return "No rooms available during the chosen dates. Please choose another time for your stay."
-
+    if(available_rooms.length === 0) {
+        model.page.error = "No rooms available during the chosen dates. Please choose another time for your stay.";
+        return
+    }
     //check available_rooms if enough rooms available
-    else if(available_rooms.length < num_rooms) return "There are not enough rooms during the dates you have chosen"
+    else if(available_rooms.length < num_rooms) {
+        model.page.error = "There are not enough rooms during the dates you have chosen"
+        return
+    }
+   
     // only one room wished -> checks is this rooms has enough beds
     /*
     else if(num_rooms === 1){
@@ -338,8 +350,11 @@ function search() {
     }
     */
     // if not enough beds in all the available rooms
-    else if (tot_beds <= pers) return "There are not enough beds available at the chosen dates."
-    // if enough rooms and beds are available it return the list of rooms
+    else if (tot_beds < pers) {
+        model.page.error = "There are not enough beds available at the chosen dates."
+        return
+    }
+        // if enough rooms and beds are available it return the list of rooms
     else {
         model.page.search_results = available_rooms
         return
@@ -358,9 +373,16 @@ function input_updater(input_field) {
         model.input.num_of_pers = parseInt(input_field.value);
         html = ``
         for (i=1; i<=model.input.num_of_pers; i++){
-            html += `
-            <option value="${i}">${i}</option>
-            `
+            if(model.input.num_of_rooms == i){
+                html += `
+                    <option value="${i}" selected="selected">${i}</option>
+                    `
+            }
+            else {
+                html += `
+                <option value="${i}">${i}</option>
+                `
+            }
         }
         document.getElementById("romvelger").innerHTML = html
         document.getElementById('romvelger').value = model.input.num_of_rooms

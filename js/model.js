@@ -4,7 +4,7 @@ let model = {
         tempPassw: '',
         start_date: '',
         end_date: '',
-        num_of_pers: 0,
+        num_of_pers: 1,
         num_of_rooms: 1,
         adminSeachDate:"",
         adminSearchBookingNr:"",
