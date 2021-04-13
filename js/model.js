@@ -93,7 +93,15 @@ let model = {
             userId:2,
             password: '',
             role: 'guest',
-            personalia: {},
+            personalia: {
+                first_name: "Guest",
+                last_name: "",
+                street: "",
+                city: "",
+                country: "",
+                email: "guest",
+                tel_num: "",
+            },
             cart:[],
         }
     },

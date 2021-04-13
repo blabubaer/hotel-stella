@@ -15,11 +15,11 @@ function sort_by_key(array, key) {
 
 
 function login (){
-    for (let i = 0; i < model.users.length; i++){
+    for (i in model.users){
         if(model.input.tempUser == model.users[i].personalia.email && model.input.tempPassw == model.users[i].password){
             console.log('logged in as ' + model.users[i].role);
             model.page.current_user = model.users[i].userId;
-            if (model.users[model.page.current_user].userId == 0) {
+            if (model.users[model.page.current_user].role == 'admin') {
                 setAdminPanel();
             } else {
                 setUserPanel();
@@ -44,7 +44,7 @@ function put_in_cart(roomId){
         userId: model.page.current_user,
         dates: [], 
         num_of_pers: model.input.num_of_pers,
-        booking_number: 1, //needs to be set automatically
+        booking_number: 1,
     }
     //get at list of all the dates between the start and end date
     var start = model.input.start_date
@@ -75,28 +75,25 @@ function put_in_cart(roomId){
             database.ref('booking_numbers').set(model.booking_numbers)
         }
     }
-    for( user of model.users){
-        if(user.userId === model.page.current_user){
-            if(user.cart) user.cart.push(booking);
-            else{
-                user.cart = [booking]                
-            }
-        }
-        database.ref("users/"+user.userId).set(user)
+    
+    if(model.users[model.page.current_user].cart) model.users[model.page.current_user].cart.push(booking);
+    else{
+        model.users[model.page.current_user].cart = [booking]                
     }
+    database.ref("users/"+ model.page.current_user).set(model.users[model.page.current_user])
+
     updateView()
         
 }
 
 function delete_from_cart(bookingnr){
-    console.log(bookingnr)
-    for (user of model.users){
-        for (a in user.cart){
-            if(user.cart[a].booking_number = bookingnr)
-                user.cart.splice(a,1)
-                database.ref("users/"+user.userId).set(user)
-        }
+    
+    for (a in model.users[model.page.current_user].cart){
+        if(model.users[model.page.current_user].cart[a].booking_number = bookingnr)
+            model.users[model.page.current_user].cart.splice(a,1)
+            database.ref("users/"+model.page.current_user).set(model.users[model.page.current_user] )
     }
+    
     for ( i in model.booking_numbers){
         if(model.booking_numbers[i] == bookingnr) {
             model.booking_numbers.splice(i,1);
@@ -110,41 +107,54 @@ function delete_from_cart(bookingnr){
 
 }
 function deleteBooking(){
-    let booked_dates = []
+    
     let bookingId = model.input.selectedBookingNr;
-    let roomNr
-   
-    for(let a=0; a<model.bookings.length; a++){
-       if(model.bookings[a].booking_number == model.input.selectedBookingNr){
+    let roomNr = model.bookings[bookingId].room_id
+    let booked_dates = model.bookings[bookingId].dates
+    for ( i in booked_dates){
+        if( model.rooms[roomNr].booked_dates.includes()){
+            model.rooms[roomNr].booked_dates.splice(model.rooms[roomNr].booked_dates.indexOf(booked_dates[i]),1)
+        }
+        else {
+            model.page.error = "The dates could not be found booked for the room."
+            updateView()
+        }
+    }
+    delete model.bookings[bookingId]
+    database.ref("bookings/" + bookingId).set('')
+    database.ref("rooms/"+ roomNr).set(model.rooms[roomNr])
+   // test this with new model before deleting below
+    
+
+   /* for(a in model.bookings){
+       if(model.bookings[a].booking_number == bookingId){
            
             roomNr = model.bookings[a].room_id;
             if(model.bookings[a].dates != undefined){
-                for(let date of model.bookings[a].dates){
-                    booked_dates.push(date)
+                for(let date in model.bookings[a].dates){
+                    booked_dates.push(model.bookings[a].dates[date])
                 }
             }
             
-            for(let z =0; z<model.rooms.length; z++){
-              
-                if(model.rooms[z].room_id == roomNr){
-                   for(let bookingdate of model.bookings[a].dates){
-                        for(var i =0; i<model.rooms[z].booked_dates.length; i++){
-                            
-                           bookingdate = new Date(bookingdate);
-                           let rom_bookingdate = new Date(model.rooms[z].booked_dates[i]);
-                           
-                            if(bookingdate.getTime() === rom_bookingdate.getTime()){
-                               
-                                model.rooms[z].booked_dates.splice(i, 1)
-                                var roomsRef = database.ref('rooms');
-                                roomsRef.set(model.rooms);
-                            }
-                        }
-                   }
+            
+            for(let bookingdate of model.bookings[a].dates){
+                for(var i =0; i<model.rooms[z].booked_dates.length; i++){
+                    
+                    bookingdate = new Date(bookingdate);
+                    let rom_bookingdate = new Date(model.rooms[z].booked_dates[i]);
+                    
+                    if(bookingdate.getTime() === rom_bookingdate.getTime()){
+                        
+                        model.rooms[z].booked_dates.splice(i, 1)
+                        var roomsRef = database.ref('rooms');
+                        roomsRef.set(model.rooms);
+                    }
+                }
+            }
                         
                         
                   
-                }
+                
             }
             model.bookings.splice(a, 1);
 
@@ -155,24 +165,21 @@ function deleteBooking(){
 
 
         }
-    }
+    }*/
 }
 function book() {
     //adding booking from cart to bookings and booked_dates of rooms
     for (booking of model.users[model.page.current_user].cart) {
-        model.bookings.push(booking)
-        for(room of model.rooms){
-            if (room.room_id == booking.room_id){
-                for(date of booking.dates){
-                    room.booked_dates.push(date)
-                }
-            }
+        model.bookings[booking.booking_number] = booking
+        if(!model.rooms[booking.room_id].booked_dates) model.rooms[booking.room_id].booked_dates = [];
+        for(date of booking.dates){
+            model.rooms[booking.room_id].booked_dates.push(date)
         }
         if(model.users[model.page.current_user].list_of_bookings){
             model.users[model.page.current_user].list_of_bookings.push(booking)
         }
         else{
-            model.users[model.page.current_user].list_of_bookings = [booking]
+            model.users[model.page.current_user].list_of_bookings = [booking,]
         }
         
     }
@@ -222,20 +229,21 @@ function newUser(){
     let isUnique = true;
 
     let validEmail = isEmailValid(model.input.tempEmail);
-    for(var user of model.users){
-        if(user.personalia.email == model.input.tempEmail){ //epost er ikke unik 
+    for(u in model.users){
+        if(model.users[u].personalia.email == model.input.tempEmail){ //epost er ikke unik 
            model.page.error = 'Eposten '+ model.input.tempEmail+ ' eksisterer fra før - velg ny epost';
            updateView();
            isUnique = false;
         }
     }
     if (isUnique && validEmail) { //epost er unik
-        let currentUser = model.users.length;
+        let currentUser = model.userId_counter;
+        model.userId_counter ++
         model.page.error = '';
-        model.users.push({
+        model.users[currentUser] = {
             password: model.input.tempPassw,
             role: 'user',
-            userId: model.userId_counter,
+            userId: currentUser,
             personalia: {
                 first_name: model.input.tempFirstName,
                 last_name: model.input.tempLastName,
@@ -246,12 +254,11 @@ function newUser(){
                 tel_num: model.input.tempTel,
             },
             list_of_bookings: []
-        });
+        };
         model.page.current_user = currentUser;
         model.page.page_pos = 'login';
-        model.userId_counter ++;
         //updating database
-        database.ref('users').set(model.users);
+        database.ref('users/' + currentUser).set(model.users[currentUser]);
         database.ref('userId_counter').set(model.userId_counter);
 
         updateView();
@@ -289,14 +296,14 @@ function search() {
 
     // check all the rooms that are free on all of these days and add them to available rooms
     var counter = 0
-    for ( var room of model.rooms) {
+    for ( var room in model.rooms) {
         var booked_dates = []
-        if (room.booked_dates != undefined) {
+        if (model.rooms[room].booked_dates != undefined) {
        
-        for (var date of room.booked_dates){
-            booked_dates.push(date.getTime())
-            
-                }
+            for (var date of model.rooms[room].booked_dates){
+                booked_dates.push(date.getTime())
+                
+            }
 
         }  
         
@@ -304,7 +311,7 @@ function search() {
             if(booked_dates.includes(date)) break;
             else counter ++
         }
-        if (counter === dates_array.length) available_rooms.push(room)
+        if (counter === dates_array.length) available_rooms.push(model.rooms[room])
         counter = 0
     }
 
