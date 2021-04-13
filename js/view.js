@@ -37,8 +37,9 @@ async function start() {
 }
 start()
 function updateView() {
-    
     if (model.page.page_pos == 'home') {
+        model.input.start_date = ''
+        model.input.end_date = ''
         homepageview();
     } else if (model.page.page_pos == 'searchResults') {
         updateSearchView();
@@ -588,12 +589,28 @@ function date_fixer(date) {
 
 function searchBannerView() {
     let html = ``;
+    var startdate = ''
+    var enddate = ''
+    if(model.input.start_date){
+        startdate = model.input.start_date.getFullYear() 
+        if(model.input.start_date.getMonth()+1 <10) startdate +=  '-' + '0' + (model.input.start_date.getMonth()+1) + '-'
+        else startdate +=  '-' + (model.input.start_date.getMonth()+1) + '-'
+        if (model.input.start_date.getDate()<10) startdate += '0'+ model.input.start_date.getDate();
+        else startdate += model.input.start_date.getDate();
+    }
+    if(model.input.end_date){
+        enddate = model.input.end_date.getFullYear() 
+        if(model.input.end_date.getMonth()+1 <10) enddate +=  '-' + '0' + (model.input.end_date.getMonth()+1) + '-'
+        else enddate +=  '-' + (model.input.end_date.getMonth()+1) + '-'
+        if (model.input.end_date.getDate()<10) enddate += '0'+ model.input.end_date.getDate();
+        else enddate += model.input.end_date.getDate();
+    }
     html += `
-        <div class="searchField">    
+        <div id='searchfield' class="searchField">    
             <label for="startDato">Start Dato:</label>
-            <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}'>
+            <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${startdate}">
             <label class="margin" for="sluttDato">Slutt Dato:</label>
-            <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}'>
+            <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${enddate}">
             <label class="margin" for="antallPersoner">Antall Voksene:</label>  
             <select id="personer" type="text" name="antallPersoner" onchange="input_updater(this)">
             <option value="1">1</option>
@@ -604,21 +621,13 @@ function searchBannerView() {
             <option value="6">6</option>
             <option value="7">7</option>
             <option value="8">8</option>
-          </select>
-          <label class="margin" for="antallPersoner">Antall Barn:</label>  
-            <select id="personer" type="text" name="antallPersoner" onchange="input_updater(this)">
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-          </select>
+            </select>
+            <label class="margin" for="antallPersoner">Antall rom:</label>  
+            <select id="romvelger" type="text" name="antallrom" onchange="input_updater(this)">
+            <option value= "1">1</option>
+            </select>
             <button class="btn small" onclick="setSearchView()">Søk</button>
-        </div>`;
+            </div>`;
     return html
 }
 

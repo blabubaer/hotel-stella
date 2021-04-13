@@ -356,5 +356,20 @@ function input_updater(input_field) {
         model.input.end_date = input_field.valueAsDate;
     } else if (input_field.name == "antallPersoner") {
         model.input.num_of_pers = parseInt(input_field.value);
+        html = ``
+        for (i=1; i<=model.input.num_of_pers; i++){
+            html += `
+            <option value="${i}">${i}</option>
+            `
+        }
+        document.getElementById("romvelger").innerHTML = html
+        document.getElementById('romvelger').value = model.input.num_of_rooms
+        if(model.input.num_of_rooms>model.input.num_of_pers){
+            model.input.num_of_rooms = model.input.num_of_pers
+            document.getElementById('romvelger').value = model.input.num_of_pers
+        }
+    }
+    else if (input_field.name == "antallrom") {
+        model.input.num_of_rooms = parseInt(input_field.value);
     }
   }
