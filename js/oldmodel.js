@@ -9,8 +9,8 @@ let model = {
         adminSeachDate:"",
         adminSearchBookingNr:"",
     },
-    rooms:{
-        101: {
+    rooms: [
+        {
             room_id:101,
             room_type: "Standart", //or business, premium
             room_prices: "1000kr",
@@ -20,7 +20,7 @@ let model = {
             img_url:"https://amorgoshotel.com/wp-content/uploads/2014/12/Amorgos-Standard-Room1-e1464286427430.jpg",
 
         },
-        201: {
+        {
             room_id:201,
             room_type: "Business", //or business, premium
             room_prices: "1200kr",
@@ -29,7 +29,7 @@ let model = {
             booked_dates: [],
             img_url:"https://t-cf.bstatic.com/images/hotel/max1280x900/557/55724294.jpg",
         },
-        301: {
+        {
             room_id:301,
             room_type: "Premium", //or business, premium
             room_prices:"1500kr",
@@ -38,29 +38,31 @@ let model = {
             booked_dates:  [],
             img_url:"https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg",
         }
-    },
-    prices: {
+    ],
+    prices : {
         'Standart' : 1000,
         'Business': 1200,
         'Premium': 1500,
     },
-    booking_numbers:["start",],
-    bookings:{
-        //example booking
-        aaaaa:{
-            room_id: 101,
-            userId: 3,
-            dates: [],
-            num_of_pers: 2,
-            booking_number: 'aaaaa',
-        }
-    },
-    users: {
-        0: {
-            userId: 0,
+    booking_numbers: ["start",],
+    bookings: [
+        {
+            room_id: 201,
+            userId: 0, /// user id eller epost! 
+            dates: [],           
+            num_pers: 2,
+            booking_number: 1,
+        },
+        
+    ],
+    users:  [
+        {
+            
+            username: 'test',
             password: 'test',
-            role:'admin',
-            personalia:{
+            role: 'admin',
+            userId: 0,
+            personalia: {
                 first_name: "Christoffer",
                 last_name: "Superstar",
                 street: "Superstreet 7",
@@ -69,11 +71,12 @@ let model = {
                 email: "chr.superstart@gmail.com",
                 tel_num: "+47 91166669",
             },
+
         },
-        //example-user
-        1:{
-            userId:1,
-            password:'bruker',
+        {
+
+            username: 'bruker',
+            password: 'bruker',
             role: 'user',
             userId: 1,
             personalia: {
@@ -86,22 +89,49 @@ let model = {
                 tel_num: "+47 91166669",
             },
             list_of_bookings: [],
-            cart: [],
+            cart: []
+
         },
-        //standart Guest User (everybody who enters the site is first this)
-        2:{
-            userId:2,
+        {
+
+            username: 'Guest',
             password: '',
             role: 'guest',
-            personalia: {},
-            cart:[],
-        }
-    },
-    page:{
-        current_user:2, //upon first entering you are a guest
+            userId: 2,
+            personalia: {
+                first_name: "Guest",
+                last_name: "Superstar",
+                street: "Superstreet 7",
+                city: "Larvik",
+                country: "Norway",
+                email: "chr.superstart@gmail.com",
+                tel_num: "+47 91166669",
+            },
+            cart: []
+
+        },
+        
+        ],
+    page: {
+        current_user: 2,
         page_pos: 'home',
         search_results: [],
         error: '',
     },
     userId_counter: 3,
 }
+
+
+//Temp for test
+
+function writeData(){
+    var list = []
+    for (i=0; i<6; i++){
+        list.push(Date(`2021-03-2`+i+'T01:00:00'))
+    }
+    database.ref('bookings/0/dates').set(list)
+    database.ref('rooms/1/booked_dates').set(list)
+}
+//writeData()
+
+
