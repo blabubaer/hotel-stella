@@ -13,15 +13,45 @@ function sort_by_key(array, key) {
     });
 }
 
+function storeGuestPersonalia(){
+    
+    let currentUser = model.userId_counter;
+        model.userId_counter ++
+        model.page.error = '';
+        model.users[currentUser] = {
+            role: 'guest',
+            userId: currentUser,
+            personalia: {
+                first_name: model.input.tempFirstName,
+                last_name: model.input.tempLastName,
+                street: model.input.tempStreet,
+                city: model.input.tempCity,
+                country: model.input.tempCountry,
+                email: model.input.tempEmail,
+                tel_num: model.input.tempTel,
+            },
+            cart: [] = model.users[2].cart
+        };
+        model.page.current_user = currentUser;
+        updateView();
+}
+
+
+
 
 function login (){
     for (i in model.users){
         if(model.input.tempUser == model.users[i].personalia.email && model.input.tempPassw == model.users[i].password){
-            console.log('logged in as ' + model.users[i].role);
             model.page.current_user = model.users[i].userId;
-            if (model.users[model.page.current_user].role == 'admin') {
+            console.log(model.page.page_pos);
+            if (model.users[model.page.current_user].role == 'admin' && model.page.page_pos != 'Personalia cart') {
                 setAdminPanel();
-            } else {
+            } else if(model.page.page_pos == 'Personalia cart'){
+                model.users[model.page.current_user].cart = model.users[2].cart;
+                model.users[2].cart = [];
+                model.page.page_pos = 'Personalia cart';
+            }
+            else {
                 setUserPanel();
             }
             model.input.tempUser = '';
@@ -108,17 +138,16 @@ function delete_from_cart(bookingnr){
 }
 function deleteBooking(){
     
-    let bookingId = model.input.selectedBookingNr;
+    let bookingId = model.input.adminSearchBookingNr;
+    
     let roomNr = model.bookings[bookingId].room_id
     let booked_dates = model.bookings[bookingId].dates
     for ( i in booked_dates){
-        if( model.rooms[roomNr].booked_dates.includes()){
+        console.log(i);
+            console.log(i + "in the iffy");
             model.rooms[roomNr].booked_dates.splice(model.rooms[roomNr].booked_dates.indexOf(booked_dates[i]),1)
-        }
-        else {
-            model.page.error = "The dates could not be found booked for the room."
-            updateView()
-        }
+       
+        
     }
     delete model.bookings[bookingId]
     database.ref("bookings/" + bookingId).set('')

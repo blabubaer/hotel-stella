@@ -203,3 +203,18 @@ h2{
     margin-top:20px;
     margin-left: 10px;
 }
+
+
+
+#personaliaWrapper{
+    display:flex;
+}
+#personaliaWrapper div{
+    margin-left:50px;
+    margin-top: 0px;
+}
+
+#personaliaWrapper .Login{
+    height: 250px;
+    margin:0px;
+}

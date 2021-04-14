@@ -61,6 +61,8 @@ function updateView() {
         updateShowBookingView();
     } else if (model.page.page_pos == 'cart') {
         updateCartView()
+    }else if(model.page.page_pos == 'Personalia cart'){
+        showSetUserOrPersonalia()
     }
 }
 function setHomeView(){
@@ -106,10 +108,77 @@ function setCart() {
     model.page.page_pos='cart'
     updateView()
 }
+function setUserOrPersonaliaCart(){
+    model.page.page_pos = 'Personalia cart'
+    updateView();
+}
 
+function showSetUserOrPersonalia(){
+    let html;
+    html += viewHeader();
+    if(model.page.current_user == 2){
+        html += `
+    <h2>Log inn, lag en ny bruker eller fyll ut personalia:</h2>
+    <div id="personaliaWrapper">
+    
+    <div class="Login"> 
+    <h2>Login </h2>
+        <p style="color:red;" class="error">${model.page.error}</p>   
+        <label for="user">Brukernavn:</label><br>
+        <input type="text" placeholder="Skriv inn brukernavn" onchange="model.input.tempUser = this.value" name="user"><br>
+        <label for="psw">Passord:</label><br>
+        <input type="password" placeholder="Skriv inn passord" onchange="model.input.tempPassw = this.value" name="psw" >
+        <br>
+        <button onclick="login(); setUserOrPersonaliaCart();" class="btn">login</button><br>
+        <button onclick="setCreateNewUser()" class="blueButton"  >Ny bruker</button>
+        
+    </div>
+    
+   
+        `;
+    html += `
+        <div>
+        
+        <div id="usersPannel">
+        <h2>Fyll ut personalia </h2>
+        <p>Fyll ut alle feltene nedenfor for å booke</p>
+        <p class="red">${model.page.error}</p>
+        <br><h3>Personalia:</h3><br><label for="email">Email:</label><br>
+        <input name="email"  onchange="model.input.tempEmail = this.value"><br>
+            <br><h3>Navn:</h3><br><label for="firstname">Fornavn:</label><br>
+            <input name="firstName"  onchange="model.input.tempFirstName = this.value" ><br>
+            <label for="lastname">Etternavn:</label><br>
+            <input name="lastname"  onchange="model.input.tempLastName = this.value" ><br>
+            <br><h3>Adresse:</h3> <br><label for="street">Gatenavn:</label><br>
+            <input name="street"  onchange="model.input.tempStreet = this.value" ><br>
+            <label for="city">By:</label><br>
+            <input name="city"  onchange="model.input.tempCity = this.value" ><br>
+            <label for="country">Land:</label><br>
+            <input name="country"  onchange="model.input.tempCountry = this.value"><br>
+            <br><h3>Kontakt:</h3><br><label for="tel">Telefon:</label><br>
+            <input name="tel"  onchange="model.input.tempTel = this.value"><br>
+            <button onclick="storeGuestPersonalia()" class="btn">Lagre</button>
+            </div>
+        </div>
+        </div>
+    `;
+    }else{
+        
+        html += `
+        <h2>Du har nå booket ditt hotelrom</h2>
+        
+        `;
+        book();
+    }
+    
+    app.innerHTML = html;
+}
 function updateShowBookingView() {
     let html;
     html += viewHeader();
+
+   
+
     bookingNr=model.input.selectedBookingNr
 
     html += '<div class="bookingnrWrapper">';
@@ -165,7 +234,7 @@ function updateCartView() {
         html += `<h1>Your shopping Cart is empty</h1>`
     }
 
-    html += `<button onclick="book()" class="btn">Kjøpe</button>`
+    html += `<button onclick="setUserOrPersonaliaCart()" class="btn">Kjøpe</button>`
 
     html += footerView();
     app.innerHTML = html
@@ -353,13 +422,13 @@ function updateAdminView() {
     //loop gjennom datoene fra model.bookings, og sjekk om dem er like
     //for hver booking skal det lages en td som markerer bookingen. For alle romnr som er booket skal det lages en tr. 
     for (let room in model.rooms) {
-        html += `</tr><tr id="a${room.room_id}">`;
-        console.log(room)
+        html += `</tr><tr id="a${room}">`;
+       
         html += '<td>' + room + '</td>';
         for (let weekday of week) {
             hasRun = false;
-            if (room.booked_dates != undefined) {
-                for (let booking of room.booked_dates) {
+            if (model.rooms[room].booked_dates != undefined) {
+                for (let booking of model.rooms[room].booked_dates) {
                     booking = new Date(booking);
                     if (weekday.getDate().toString() == booking.getDate().toString()) {
                         html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
