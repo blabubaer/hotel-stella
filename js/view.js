@@ -63,6 +63,8 @@ function updateView() {
         updateCartView()
     }else if(model.page.page_pos == 'Personalia cart'){
         showSetUserOrPersonalia()
+    }else if(model.page.page_pos == 'Edit Booking'){
+        showEditBooking();
     }
 }
 function setHomeView(){
@@ -112,7 +114,77 @@ function setUserOrPersonaliaCart(){
     model.page.page_pos = 'Personalia cart'
     updateView();
 }
+function setshowEditBooking(){
+    model.page.page_pos = 'Edit Booking';
+    updateView();
+}
 
+function showEditBooking(){
+    let html = '';
+    for (booking in model.bookings){
+        if(model.bookings[booking].booking_number == model.input.adminSearchBookingNr ){
+            let start_date = new Date(model.bookings[booking].dates[0]);
+            let end_date = new Date(model.bookings[booking].dates[model.bookings[booking].dates.length - 1])
+            if(start_date){
+                startdate = start_date.getFullYear() 
+                if(start_date.getMonth()+1 <10) startdate +=  '-' + '0' + (start_date.getMonth()+1) + '-'
+                else startdate +=  '-' + (start_date.getMonth()+1) + '-'
+                if (start_date.getDate()<10) startdate += '0'+ start_date.getDate();
+                else startdate += start_date.getDate();
+            }
+            if(end_date){
+                enddate = end_date.getFullYear() 
+                if(end_date.getMonth()+1 <10) enddate +=  '-' + '0' + (end_date.getMonth()+1) + '-'
+                else enddate +=  '-' + (end_date.getMonth()+1) + '-'
+                if (end_date.getDate()<10) enddate += '0'+ end_date.getDate();
+                else enddate += end_date.getDate();
+            }
+
+           
+            console.log(end_date);
+            html+= `
+            <label for="startDato">Start Dato:</label>
+            <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${startdate}">
+            <br><label class="margin" for="sluttDato">Slutt Dato:</label>
+            <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${enddate}">
+            <br><label class="margin" for="antallPersoner">Antall Voksene:</label>  
+            <select id="personer" type="text" name="antallPersoner" value="${model.bookings[booking].num_of_pers} onchange="input_updater(this)">
+            `;
+            for (i = 1; i<9;i++){
+                if(model.input.num_of_pers == i){
+                    html += `
+                        <option value="${i}" selected="selected">${i}</option>
+                        `;
+                }
+                else {
+                    html += `
+                    <option value="${i}">${i}</option>
+                    `;
+                };
+            };
+            html+=`
+            </select>
+            <br><label class="margin" for="romNr">Romtype:</label>  
+            <select id="rom" type="text" name="romNr" value="${model.bookings[booking].room_id} onchange="input_updater(this)">
+            
+            `;
+            for (let rom in model.rooms){
+                if(model.bookings[booking].room_id == rom){
+                    html += `
+                        <option value="${model.rooms[rom].room_type}" selected="selected">${model.rooms[rom].room_type}</option>
+                        `;
+                }
+                else {
+                    html += `
+                    <option value="${model.rooms[rom].room_type}">${model.rooms[rom].room_type}</option>
+                    `;
+                };
+            };
+            html += `</select>`
+        }
+    }
+    app.innerHTML = html;
+}
 function showSetUserOrPersonalia(){
     let html;
     html += viewHeader();
@@ -166,7 +238,7 @@ function showSetUserOrPersonalia(){
         
         html += `
         <h2>Du har nå booket ditt hotelrom</h2>
-        
+
         `;
         book();
     }
@@ -279,7 +351,7 @@ function updateAdminSearchOnBookingNr() {
 
             html += '</p>';
             html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
-            html += '<button  class="alterButton">Endre reservasjon</button>';
+            html += '<button  onclick="setshowEditBooking()" class="alterButton">Endre reservasjon</button>';
             html += '</div>';
         }
     }
