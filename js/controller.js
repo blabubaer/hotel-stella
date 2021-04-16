@@ -31,7 +31,49 @@ function getBookId(roomid, bookedDate){
     }
 }
 
-
+function alterbooking(bookingId){
+    Date.prototype.addDays = function (days) { //funker som fjell 
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+    }
+    for(booking in model.bookings){
+        if(booking == bookingId){
+            let dates=[];
+            let startDate 
+            let endDate ;
+            if(model.input.start_date != ''){
+                startDate = new Date( model.input.start_date);
+            }else{
+                startDate = new Date(model.bookings[bookingId].dates[0]);
+            }
+            if(model.input.end_date != ''){
+                endDate = new Date (model.input.end_date);
+            }else{
+                endDate = new Date (model.bookings[bookingId].dates[model.bookings[bookingId].dates.length-1])
+            }
+            while(startDate.getTime() <= endDate.getTime()){
+                dates.push(startDate);
+                startDate = startDate.addDays(1)
+            }
+            let room_id;
+            if(model.input.romnr != '' || model.input.romnr != undefined){
+                room_id = model.input.romnr;
+            }else{
+                room_id = model.bookings[booking].room_id;
+            }
+            //todo legge til room id fra tidligere modell når rom id ikke har blitt changed... 
+            model.bookings[booking]={
+                room_id: room_id,
+                userId: 3,
+                dates: dates,
+                num_of_pers: model.input.num_of_pers,
+                booking_number: bookingId,
+            }
+            database.ref('bookings').set(model.bookings)
+        }
+    }
+}
 
 function storeGuestPersonalia(){
     

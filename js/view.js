@@ -121,6 +121,8 @@ function setshowEditBooking(){
 
 function showEditBooking(){
     let html = '';
+    model.input.adminSearchBookingNr = model.input.selectedBookingNr; 
+    html += viewHeader();
     for (booking in model.bookings){
         if(model.bookings[booking].booking_number == model.input.adminSearchBookingNr ){
             let start_date = new Date(model.bookings[booking].dates[0]);
@@ -165,22 +167,23 @@ function showEditBooking(){
             html+=`
             </select>
             <br><label class="margin" for="romNr">Romtype:</label>  
-            <select id="rom" type="text" name="romNr" value="${model.bookings[booking].room_id} onchange="input_updater(this)">
+            <select id="rom" type="text" name="romNr" value="${model.bookings[booking].room_id}" onchange = "model.input.romnr = this.value">
             
             `;
             for (let rom in model.rooms){
                 if(model.bookings[booking].room_id == rom){
                     html += `
-                        <option value="${model.rooms[rom].room_type}" selected="selected">${model.rooms[rom].room_type}</option>
+                        <option value="${model.rooms[rom].room_id}" selected="selected">${model.rooms[rom].room_type}</option>
                         `;
                 }
                 else {
                     html += `
-                    <option value="${model.rooms[rom].room_type}">${model.rooms[rom].room_type}</option>
+                    <option value="${model.rooms[rom].room_id}">${model.rooms[rom].room_type}</option>
                     `;
                 };
             };
-            html += `</select>`
+            html += `</select>
+            <button onclick="alterbooking('${booking}')">Save</button>`
         }
     }
     app.innerHTML = html;
@@ -268,7 +271,7 @@ function updateShowBookingView() {
     }
     html += '</p>';
     html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
-    html += '<button class="alterButton">Endre reservasjon</button>';
+    html += '<button onclick="setshowEditBooking()" class="alterButton">Endre reservasjon</button>';
     html += '</div></div>';
             
     html += footerView(); 
