@@ -13,6 +13,26 @@ function sort_by_key(array, key) {
     });
 }
 
+function getBookId(roomid, bookedDate){
+    
+    aDate=bookedDate.getTime();
+    for(let books in model.bookings){
+                            
+        if(model.bookings[books].dates && model.bookings[books].room_id == roomid){
+            for(let bookedDates of model.bookings[books].dates){
+                console.log (bookedDates +"-"+ aDate)
+                if(bookedDates == aDate){
+                    return books;
+                }
+               
+            }
+
+        }
+    }
+}
+
+
+
 function storeGuestPersonalia(){
     
     let currentUser = model.userId_counter;

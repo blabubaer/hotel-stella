@@ -186,7 +186,7 @@ function showEditBooking(){
     app.innerHTML = html;
 }
 function showSetUserOrPersonalia(){
-    let html;
+    let html=``;
     html += viewHeader();
     if(model.page.current_user == 2){
         html += `
@@ -503,7 +503,11 @@ function updateAdminView() {
                 for (let booking of model.rooms[room].booked_dates) {
                     booking = new Date(booking);
                     if (weekday.getDate().toString() == booking.getDate().toString()) {
-                        html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                       
+                        bookingNr = getBookId(room, booking);
+                          
+                        
+                        html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
                         hasRun = true;
                     }
                 }
