@@ -42,6 +42,11 @@ function alterbooking(bookingId){
             let dates=[];
             let startDate 
             let endDate ;
+
+
+            //fjerne utgåtte datoer fra rooms eller legge til. etter nye datoer er blitt regnet ut. 
+
+
             if(model.input.start_date != ''){
                 startDate = new Date( model.input.start_date);
             }else{
@@ -52,25 +57,66 @@ function alterbooking(bookingId){
             }else{
                 endDate = new Date (model.bookings[bookingId].dates[model.bookings[bookingId].dates.length-1])
             }
+            //while bookings_dates < booking dates
+           
+           // hvorfor sletter ikke denne første datoen ?????
+                for(let i =0; i < model.bookings[booking].dates.length; i++){ 
+                   console.log(i);
+                    if(model.rooms[model.bookings[booking].room_id].booked_dates.includes(model.bookings[booking].dates[i]) ){
+                        model.rooms[model.bookings[booking].room_id].booked_dates.splice(model.rooms[model.bookings[booking].room_id].booked_dates.indexOf(model.bookings[booking].dates[i]), 1);
+                        console.log( model.rooms[model.bookings[booking].room_id].booked_dates)
+                    }
+                }
+                for(let i =0; i < model.bookings[booking].dates.length; i++){ 
+                    console.log(i);
+                     if(model.rooms[model.bookings[booking].room_id].booked_dates.includes(model.bookings[booking].dates[i]) ){
+                         model.rooms[model.bookings[booking].room_id].booked_dates.splice(model.rooms[model.bookings[booking].room_id].booked_dates.indexOf(model.bookings[booking].dates[i]), 1);
+                         console.log( model.rooms[model.bookings[booking].room_id].booked_dates)
+                     }
+                 }
+                model.bookings[booking].dates.splice(0, model.bookings[booking].dates.length);
+
+           
             while(startDate.getTime() <= endDate.getTime()){
-                dates.push(startDate);
+                dates.push(startDate.getTime());
+                model.bookings[booking].dates.push(startDate.getTime())
+                model.rooms[model.bookings[booking].room_id].booked_dates.push(startDate.getTime());
                 startDate = startDate.addDays(1)
             }
-            let room_id;
-            if(model.input.romnr != '' || model.input.romnr != undefined){
-                room_id = model.input.romnr;
-            }else{
-                room_id = model.bookings[booking].room_id;
-            }
-            //todo legge til room id fra tidligere modell når rom id ikke har blitt changed... 
+
+            let romnr = model.bookings[booking].room_id;
+
             model.bookings[booking]={
-                room_id: room_id,
-                userId: 3,
+                room_id: romnr,
                 dates: dates,
+                userId: 3,
                 num_of_pers: model.input.num_of_pers,
                 booking_number: bookingId,
             }
+            
             database.ref('bookings').set(model.bookings)
+            database.ref("rooms/"+ romnr).set(model.rooms[romnr])
+            
+            /*
+            for(let date of model.bookings[booking].dates){ //gamle datoer
+                for( let room in model.rooms){ // rooms
+                    for(let dato of dates){ // nye datoer
+                        if (model.rooms[room].booked_dates.includes(date) && model.rooms[room].booked_dates.includes(dato)){
+                            //alle booked datoer fra denne booking. 
+                            //finnes i array fra før
+                        }else if(!model.rooms[room].booked_dates.includes(dato)){
+                            console.log('før !'+model.rooms[room].booked_dates);
+                            model.rooms[room].booked_dates.push(dato);
+                            console.log('etter !'+model.rooms[room].booked_dates);
+                        }
+                    }
+                    
+                }
+            }
+            
+            */
+            //todo legge til room id fra tidligere modell når rom id ikke har blitt changed... 
+            /**/
         }
     }
 }
