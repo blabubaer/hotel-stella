@@ -153,11 +153,12 @@ function showRoomWeekview(){
     let row2 = "";
 
     dateString = new Date();
+    dateString.setHours(02, 0,0,0)
     if (firstTime) {
         firstTime = false;
 
         week.push(new Date(dateString));
-
+        
         week.push(new Date(dateString.addDays(1)));
         week.push(new Date(dateString.addDays(2)));
         week.push(new Date(dateString.addDays(3)));
@@ -165,8 +166,9 @@ function showRoomWeekview(){
         week.push(new Date(dateString.addDays(5)));
         week.push(new Date(dateString.addDays(6)));
         week.push(new Date(dateString.addDays(7)));
+        
         for (let weekday of week) {
-            weekday.correctMonth();
+            
             html += '<th>' + weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear() + '</th>';
         }
     }
@@ -185,8 +187,9 @@ function showRoomWeekview(){
                 if (model.rooms[room].booked_dates) {
                     for (let booking of model.rooms[room].booked_dates) {
                         booking = new Date(booking);
+                        console.log(weekday + ' ' + booking);
                         if (weekday.getTime() == booking.getTime()) {
-                            html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                            html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
                             hasRun = true;
                         }
                     }
@@ -519,7 +522,7 @@ function updateAdminSearchOnDate() {
                 for (let booking of model.rooms[room].booked_dates) {
                     booking = new Date(booking);
                     if (weekday.getTime() == booking.getTime()) {
-                        html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                        html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
                         hasRun = true;
                     }
                 }

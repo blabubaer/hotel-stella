@@ -20,7 +20,6 @@ function getBookId(roomid, bookedDate){
                             
         if(model.bookings[books].dates && model.bookings[books].room_id == roomid){
             for(let bookedDates of model.bookings[books].dates){
-                console.log (bookedDates +"-"+ aDate)
                 if(bookedDates == aDate){
                     return books;
                 }
@@ -96,7 +95,7 @@ function alterbooking(bookingId){
             model.bookings[booking]={
                 room_id: romnr,
                 dates: dates,
-                userId: 3,
+                userId: model.bookings[booking].userId,
                 num_of_pers: model.input.num_of_pers,
                 booking_number: bookingId,
             }
