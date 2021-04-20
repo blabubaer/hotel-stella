@@ -65,6 +65,8 @@ function updateView() {
         showSetUserOrPersonalia()
     }else if(model.page.page_pos == 'Edit Booking'){
         showEditBooking();
+    }else if(model.page.page_pos == 'room week'){
+        showRoomWeekview()
     }
 }
 function setHomeView(){
@@ -118,7 +120,97 @@ function setshowEditBooking(){
     model.page.page_pos = 'Edit Booking';
     updateView();
 }
+function setRoomWeekView(){
+    model.page.page_pos = 'room week'
+    updateView();
+}
+function showRoomWeekview(){
+    let html ='';
+    html += viewHeader();
+    html += `<table style = "width:100%">
+          <tr>
+            <th>romnr</th>
+            `;
+    let datesArray = [];
+    //dates = sort_by_key(model.bookings, 'date');
 
+    let firstTime = true;
+    Date.prototype.addDays = function (days) { //funker som fjell 
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+    }
+    Date.prototype.correctMonth = function () {
+        var date = new Date(this.valueOf());
+        date.setMonth(date.getMonth + 1)
+        return date
+    }
+
+    let week = [];
+    let rooms = [];
+
+    let row1 = "";
+    let row2 = "";
+
+    dateString = new Date();
+    if (firstTime) {
+        firstTime = false;
+
+        week.push(new Date(dateString));
+
+        week.push(new Date(dateString.addDays(1)));
+        week.push(new Date(dateString.addDays(2)));
+        week.push(new Date(dateString.addDays(3)));
+        week.push(new Date(dateString.addDays(4))); /* Legger til en dato for hele uken */
+        week.push(new Date(dateString.addDays(5)));
+        week.push(new Date(dateString.addDays(6)));
+        week.push(new Date(dateString.addDays(7)));
+        for (let weekday of week) {
+            weekday.correctMonth();
+            html += '<th>' + weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear() + '</th>';
+        }
+    }
+    //om rooms er tom - print ut ei rad med romNr osv
+
+    let hasRun = false;
+    //loop gjennom datoene fra model.bookings, og sjekk om dem er like
+    //for hver booking skal det lages en td som markerer bookingen. For alle romnr som er booket skal det lages en tr. 
+    for (let room in model.rooms) {
+        if(room == model.input.selectedRoom){
+
+            html += `</tr><tr id="a${room.room_id}">`;
+            html += '<td>' + room + '</td>';
+            for (let weekday of week) {
+                hasRun = false;
+                if (model.rooms[room].booked_dates) {
+                    for (let booking of model.rooms[room].booked_dates) {
+                        booking = new Date(booking);
+                        if (weekday.getTime() == booking.getTime()) {
+                            html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                            hasRun = true;
+                        }
+                    }
+                }
+
+                if (!hasRun) {
+                    html += `<td class="notBooked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+
+                }
+
+
+            }
+        }
+    }
+
+    html += '</tr>'
+
+
+
+
+    html += ` 
+        </table >`;
+        app.innerHTML =html;
+}
 function showEditBooking(){
     let html = '';
     model.input.adminSearchBookingNr = model.input.selectedBookingNr; 
@@ -150,7 +242,7 @@ function showEditBooking(){
             <br><label class="margin" for="sluttDato">Slutt Dato:</label>
             <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${enddate}">
             <br><label class="margin" for="antallPersoner">Antall Voksene:</label>  
-            <select id="personer" type="text" name="antallPersoner" value="${model.bookings[booking].num_of_pers} onchange="input_updater(this)">
+            <select id="personer" type="text" name="antallPersoner" value="${model.bookings[booking].num_of_pers}" onchange="model.input.num_of_pers = this.value">
             `;
             for (i = 1; i<9;i++){
                 if(model.input.num_of_pers == i){
@@ -167,7 +259,7 @@ function showEditBooking(){
             html+=`
             </select>
             <br><label class="margin" for="romNr">Romtype:</label>  
-            <select id="rom" type="text" name="romNr" value="${model.bookings[booking].room_id}" onchange = "model.input.romnr = this.value">
+            <select id="rom" type="text" name="romNr" value="${model.bookings[booking].room_id}" onchange="model.input.romnr = this.value">
             
             `;
             for (let rom in model.rooms){
@@ -263,7 +355,7 @@ function updateShowBookingView() {
     html += `<p>${model.rooms[model.bookings[bookingNr].room_id].room_prices}</p>`;
     html += `<p>Bookingnr: ${bookingNr}</p>`;
     html += `<p>Romnr: ${model.bookings[bookingNr].room_id}</p>`;
-    html += `<p>Antall personer: ${model.bookings[bookingNr].num_pers}</p>`;
+    html += `<p>Antall personer: ${model.bookings[bookingNr].num_of_pers}</p>`;
     html += '<p>Reserverte datoer: ';
     for (let date of model.bookings[bookingNr].dates) {
         date = new Date(date);
@@ -499,7 +591,7 @@ function updateAdminView() {
     for (let room in model.rooms) {
         html += `</tr><tr id="a${room}">`;
        
-        html += '<td>' + room + '</td>';
+        html += `<td onclick=" model.input.selectedRoom = ${room}; setRoomWeekView();">${room}</td>`;
         for (let weekday of week) {
             hasRun = false;
             if (model.rooms[room].booked_dates != undefined) {
@@ -508,7 +600,7 @@ function updateAdminView() {
                     if (weekday.getDate().toString() == booking.getDate().toString()) {
                        
                         bookingNr = getBookId(room, booking);
-                          
+                        console.log(bookingNr)  
                         
                         html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
                         hasRun = true;
