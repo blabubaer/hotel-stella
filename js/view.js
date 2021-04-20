@@ -204,8 +204,8 @@ function showSetUserOrPersonalia(){
         <label for="psw">Passord:</label><br>
         <input type="password" placeholder="Skriv inn passord" onchange="model.input.tempPassw = this.value" name="psw" >
         <br>
-        <button onclick="login(); setUserOrPersonaliaCart();" class="btn">login</button><br>
-        <button onclick="setCreateNewUser()" class="blueButton"  >Ny bruker</button>
+        <button onclick="login(); setUserOrPersonaliaCart();" class="btn"><i class="fas fa-sign-in-alt"></i>login</button><br>
+        <button onclick="setCreateNewUser()" class="blueButton"  ><i class="fas fa-user"></i> Ny bruker</button>
         
     </div>
     
@@ -270,8 +270,8 @@ function updateShowBookingView() {
         html += date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear() + ' -> ';
     }
     html += '</p>';
-    html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
-    html += '<button onclick="setshowEditBooking()" class="alterButton">Endre reservasjon</button>';
+    html += '<button onclick="deleteBooking()" class="deleteButton"><i class="fas fa-trash-alt"></i> Slett reservasjon</button>';
+    html += '<button class="alterButton"><i class="fas fa-redo"></i> Endre reservasjon</button>';
     html += '</div></div>';
             
     html += footerView(); 
@@ -295,7 +295,7 @@ function updateCartView() {
                         <p>Price: ${model.prices[model.rooms[room].room_type]}</p>
                         <p>Startdato: ${new Date(booking.dates[0])}</p>
                         <p>Sluttdato: ${new Date(booking.dates[booking.dates.length - 1])}</p>
-                        <button onclick="delete_from_cart('${booking.booking_number}')" class="btn">Fjern fra Handlevogn</button>
+                        <button onclick="delete_from_cart('${booking.booking_number}')" class="btn"><i class="fas fa-trash-alt"></i>Fjern fra Handlevogn</button>
                         </div>
                         </div>
                         `
@@ -309,7 +309,7 @@ function updateCartView() {
         html += `<h1>Your shopping Cart is empty</h1>`
     }
 
-    html += `<button onclick="setUserOrPersonaliaCart()" class="btn">Kjøpe</button>`
+    html += `<button onclick="setUserOrPersonaliaCart()" class="btn"><i class="fas fa-shopping-cart"></i> Kjøpe</button>`
 
     html += footerView();
     app.innerHTML = html
@@ -353,8 +353,8 @@ function updateAdminSearchOnBookingNr() {
             }
 
             html += '</p>';
-            html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
-            html += '<button  onclick="setshowEditBooking()" class="alterButton">Endre reservasjon</button>';
+            html += '<button onclick="deleteBooking()" class="deleteButton"><i class="fas fa-trash-alt"></i> Slett reservasjon</button>';
+            html += '<button  onclick="setshowEditBooking()" class="alterButton"><i class="fas fa-redo"></i> Endre reservasjon</button>';
             html += '</div>';
         }
     }
@@ -457,7 +457,7 @@ function updateAdminSearchOnDate() {
 function updateAdminView() {
     let html = ``;
     html += viewHeader();
-    html += `<div><label for="search">Søk:</label><input name="search" onchange="model.input.adminSearchBookingNr = this.value" placeholder="Søk på bookingnr"><button class="btn small" onclick="setAdminSearchOnBookingNr()">Søk</button> <label for="date">Dato:</label><input onchange="model.input.adminSeachDate = this.value" type="date" name="date"><button class="btn small" onclick="setAdminSearchOnDate()">Søk</button> </div>`;
+    html += `<div><label for="search">Søk:</label><input name="search" onchange="model.input.adminSearchBookingNr = this.value" placeholder="Søk på bookingnr"><button class="btn small" onclick="setAdminSearchOnBookingNr()"><i class="fas fa-search"></i> Søk</button> <label for="date">Dato:</label><input onchange="model.input.adminSeachDate = this.value" type="date" name="date"><button class="btn small" onclick="setAdminSearchOnDate()"><i class="fas fa-search"></i> Søk</button> </div>`;
     html += `<div id="bookingOverview">`
     //sort in loop smallest date first. create view with first date first. and show for a week. 
     html += `<table style = "width:100%">
@@ -565,7 +565,7 @@ function updateNewUserView() {
                 <input name="country"  onchange="model.input.tempCountry = this.value"><br>
                 <br><h3>Kontakt:</h3><br><label for="tel">Telefon:</label><br>
                 <input name="tel"  onchange="model.input.tempTel = this.value"><br>
-                <button onclick="newUser()" class="btn">Lagre</button>
+                <button onclick="newUser()" class="btn"><i class="fas fa-save"></i> Lagre</button>
             </div>
             <div id="bookings">
             
@@ -605,7 +605,7 @@ function updateUserpanelView() {
                 <label for="tel">Telefon:</label><br>
                 <input name="tel"  onchange="model.input.tempTel = this.value" value="${model.users[model.page.current_user].personalia.tel_num}"><br>
                 <button style="    width: 159px;
-                height: 38px; margin-top:20px;" onclick="storePersonalia()" class="btn">Lagre</button>
+                height: 38px; margin-top:20px;" onclick="storePersonalia()" class="btn"><i class="fas fa-save"></i> Lagre</button>
             </div>
             
                 `;
@@ -645,8 +645,8 @@ function updateLoginView() {
             <label for="psw">Passord:</label><br>
             <input type="password" placeholder="Skriv inn passord" onchange="model.input.tempPassw = this.value" name="psw" >
             <br>
-            <button onclick="login()" class="btn">login</button><br>
-            <button onclick="setCreateNewUser()" class="blueButton"  >Ny bruker</button>
+            <button onclick="login()" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button><br>
+            <button onclick="setCreateNewUser()" class="blueButton"  ><i class="fas fa-user"></i> Ny bruker</button>
             
         </div>
         
@@ -708,7 +708,7 @@ function updateSearchView() {
             <img src='${img_url}' alt="Standard" width="350" height="200">
             <p>Room Type: ${room.room_type}</p>
             <p>Price: ${model.prices[room.room_type]}</p>
-            <button onclick="put_in_cart(${room.room_id})" class="btn">Satt i handlevogn</button>
+             <button onclick="put_in_cart(${room.room_id})" class="btn"><i class="fas fa-luggage-cart"></i> Legg til i handlevogn</button>
             </div>
         </div>
         
@@ -716,7 +716,7 @@ function updateSearchView() {
     }
     if (model.users[model.page.current_user].cart && model.users[model.page.current_user].cart.length != 0) {
         html += `
-        <button onclick="setCart()">Til Handlevogn</button>
+        <button onclick="setCart()"><i class="fas fa-luggage-cart"></i> Til Handlevogn</button>
         `
     }
     html += footerView();
@@ -796,24 +796,30 @@ function searchBannerView() {
                     `
                 }
             }
-            html+=`</select>
-            <button class="btn small" onclick="setSearchView()">Søk</button>
+            html += `</select>
+            <button class="btn small" onclick="setSearchView()"><i class="fas fa-search"></i>Søk</button>
             </div>`;
     return html
 }
 
 function viewHeader() {
-    let html = '<div id="header_overdiv">';
-    html += `<div id="header"><h1 onclick="setHomeView()">Hotell Stella - ${model.page.page_pos}</h1>`;
+    let html = '<div class="header_overdiv">';
+    html += `<div class="headerView">
+            <h1 onclick="setHomeView()"><span>Hotel</span>Stella - ${model.page.page_pos}</h1></div>`;
+
     if (model.users[model.page.current_user].role == 'guest') {
-        html += `<div class="logout"><span onclick="setLoginView()">Login </span><span> Guest </span><span onclick="setCart()"> Handlevogn</span></div></div>`;
+        html += `<div class="logout"><span onclick="setLoginView()"><i class="fas fa-sign-in-alt"></i> Login </span>
+                <br>
+                <span> <i class="fas fa-concierge-bell"></i> Guest </span>
+                <br>
+                <span onclick="setCart()"><i class="fas fa-luggage-cart"></i> Handlevogn</span></div></div>`;
 
     } else if (model.users[model.page.current_user].role == 'admin') {
-        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="setAdminPanel()">admin </span><span onclick="logout()"> logout</span></div></div>`;
+        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="setAdminPanel()"><i class="fas fa-ad"></i>admin </span><span onclick="logout()"><i class="fas fa-sign-out-alt"></i> logout</span></div></div>`;
 
     }
     else if (model.users[model.page.current_user].role == 'user') {
-        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name} </span><span onclick="logout()"> logout </span> <span onclick="setCart()"> Handlevogn</span></div></div>`;
+        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name} </span><span onclick="logout()"><i class="fas fa-sign-out-alt"></i>  logout </span> <span onclick="setCart()"><i class="fas fa-luggage-cart"></i>Handlevogn</span></div></div>`;
     }
 
     html += `</div>`
@@ -826,13 +832,15 @@ function footerView() {
         <div class="footer-content">
 
             <div class="footer-section about">
-                <h1 class="logo-text"><span>Hotel</span>Stella</h1>
+                <h1 class="logo-text" onclick="setHomeView()"><span>Hotel</span>Stella</h1>
+              
                 <p>
                    Hotel Stella ligger i Skien og er Byens vakkreste hotel
                 </p>
+                <br>
                <div class="contact">
-                    <span><i class="fas fa-phone"></i> &nbsp; 112 113 110 </span>
-                    <span><i class="fas fa-envelope"></i> &nbsp; Hotel@Stella.no </span>
+                    <span><i class="fas fa-phone-square-alt"></i> &nbsp; 112 113 110 </span>
+                    <span><i class="fas fa-envelope" ></i> &nbsp; Hotel@Stella.no </span>
                 </div>
                 <div class="sosialmedia">
                     <a herf="#"><i class="fab fa-facebook"></i></a>
@@ -843,11 +851,11 @@ function footerView() {
 
             <div class="footer-section links">
                 <h2>Linker</h2>
-                <br>
                 <ul>
-                    <a herf="#"><li>Home</li></a>
-                    <a herf="#"><li>Booking</li></a>
-                    <a herf="#"><li>Login</li></a>
+                    <a onclick="setHomeView()"><li>Home</li></a>
+                    <a onclick="setShowBookingView()"><li>Booking</li></a>
+                    <a onclick="setLoginView()"><li>Login</li></a>
+                    <a onclick="setAdminPanel()"><li>Admin</li></a>
                 </ul>
                 </div>
 
@@ -857,7 +865,7 @@ function footerView() {
                 <from action="index.html" method="post">
                     <input type="email" name="email" class="text-input contact-input" placeholder="Din epost adresse">
                     <textarea name="message"  class="text-input contact-input" placeholder="Skriv her..."></textarea>
-                    <button type="submit" class="btn btn-big">
+                    <button type="submit" class="btn btn-big"><i class="fas fa-paper-plane"></i>
                     Send
                     </button>
                 </form>
@@ -869,7 +877,6 @@ function footerView() {
          </div>`;
     return html
 }
-
 function updatebookingview() {
     var html = ``
     html += viewHeader()
@@ -883,8 +890,8 @@ function updatebookingview() {
     <label for="psw">Passord:</label><br>
     <input type="password" placeholder="Skriv inn passord" onchange="model.input.tempPassw = this.value" name="psw" >
     <br>
-    <button onclick="login()" class="btn">login</button><br>
-    <button onclick="setCreateNewUser()" class="blueButton"  >Ny bruker</button>
+    <button onclick="login()" class="btn"><i class="fas fa-sign-in-alt"></i> login</button><br>
+    <button onclick="setCreateNewUser()" class="blueButton"  ><i class="far fa-user"></i> Ny bruker</button>
     </div>
     
     
@@ -906,7 +913,7 @@ function updatebookingview() {
     <label for="tel">Telefon:</label><br>
     <input name="tel"  onchange="model.input.tempTel = this.value" value="${model.users[model.page.current_user].personalia.tel_num}"><br>
     <button style="    width: 159px;
-    height: 38px; margin-top:20px;" onclick="storePersonalia()" class="btn">Lagre</button>
+    height: 38px; margin-top:20px;" onclick="storePersonalia()" class="btn"><i class="fas fa-save"></i> Lagre</button>   
     </div> 
     `
 
@@ -924,7 +931,7 @@ function updatebookingview() {
     */
     // Confirm
 
-    html += `<button id="confirmOrder" onclick="Confirm()">Confirm</button></div>`;
+    html += `<button id="confirmOrder" onclick="Confirm()"><i class="far fa-calendar-check"></i>Confirm</button></div>`;
     html += footerView()
 
     app.innerHTML = html;
@@ -956,9 +963,9 @@ function bookingdetailView() {
         }
     }
 
-    html += `<button id="searchOrder" onclick="search()">Søk</button></div>`;
-    html += `<button id="SaveDetails" onclick="save()">Lagre</button></div>`;
-    html += `<button id="deleteDetails" onclick="delete()">Slett</button></div>`;
+    html += `<button id="searchOrder" onclick="search()"><i class="fas fa-search"></i> Søk </button></div>`;
+    html += `<button id="SaveDetails" onclick="save()"><i class="fas fa-save"></i> Lagre</button></div>`;
+    html += `<button id="deleteDetails" onclick="delete()"> <i class="fas fa-trash-alt"></i> Slett</button></div>`;
 
     html += footerView()
 

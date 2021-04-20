@@ -12,7 +12,14 @@
 #header {
     display: grid;
     grid-template-columns: 12fr 2fr;
+   background: black;
 }
+
+.headerView {
+    display: grid;
+    grid-template-columns: 12fr 2fr;
+}
+
 
 h1 {
     margin: 10px;
@@ -20,6 +27,10 @@ h1 {
     margin-left: 0px;
     padding-left: 0px;
 }
+.h1 span {
+    color: #a7ef0b;
+}
+
 h2{
     margin-top:20px;
     margin-bottom: 20px;
