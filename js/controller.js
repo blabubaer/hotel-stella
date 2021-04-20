@@ -59,7 +59,7 @@ function alterbooking(bookingId){
             }
             //while bookings_dates < booking dates
            
-           // hvorfor sletter ikke denne første datoen ?????
+           // hvorfor sletter ikke denne første datoen ????? hvorfor må den kjøres 2 ganger ???
                 for(let i =0; i < model.bookings[booking].dates.length; i++){ 
                    console.log(i);
                     if(model.rooms[model.bookings[booking].room_id].booked_dates.includes(model.bookings[booking].dates[i]) ){
@@ -76,15 +76,22 @@ function alterbooking(bookingId){
                  }
                 model.bookings[booking].dates.splice(0, model.bookings[booking].dates.length);
 
-           
+                let romnr = model.input.romnr;
+
+                if(romnr == undefined){
+                    romnr = model.bookings[booking].room_id;
+                }
+                if(! model.rooms[romnr].booked_dates){
+                    model.rooms[romnr].booked_dates = [];
+                }
             while(startDate.getTime() <= endDate.getTime()){
                 dates.push(startDate.getTime());
                 model.bookings[booking].dates.push(startDate.getTime())
-                model.rooms[model.bookings[booking].room_id].booked_dates.push(startDate.getTime());
+                model.rooms[romnr].booked_dates.push(startDate.getTime());
                 startDate = startDate.addDays(1)
             }
 
-            let romnr = model.bookings[booking].room_id;
+           
 
             model.bookings[booking]={
                 room_id: romnr,
@@ -95,28 +102,8 @@ function alterbooking(bookingId){
             }
             
             database.ref('bookings').set(model.bookings)
-            database.ref("rooms/"+ romnr).set(model.rooms[romnr])
+            database.ref("rooms").set(model.rooms)
             
-            /*
-            for(let date of model.bookings[booking].dates){ //gamle datoer
-                for( let room in model.rooms){ // rooms
-                    for(let dato of dates){ // nye datoer
-                        if (model.rooms[room].booked_dates.includes(date) && model.rooms[room].booked_dates.includes(dato)){
-                            //alle booked datoer fra denne booking. 
-                            //finnes i array fra før
-                        }else if(!model.rooms[room].booked_dates.includes(dato)){
-                            console.log('før !'+model.rooms[room].booked_dates);
-                            model.rooms[room].booked_dates.push(dato);
-                            console.log('etter !'+model.rooms[room].booked_dates);
-                        }
-                    }
-                    
-                }
-            }
-            
-            */
-            //todo legge til room id fra tidligere modell når rom id ikke har blitt changed... 
-            /**/
         }
     }
 }
