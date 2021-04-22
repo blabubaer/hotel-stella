@@ -168,8 +168,8 @@ function showRoomWeekview(){
         week.push(new Date(dateString.addDays(7)));
         
         for (let weekday of week) {
-            
-            html += '<th>' + weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear() + '</th>';
+            weekday = date_fixer(weekday);
+            html += '<th>' + weekday + '</th>';
         }
     }
     //om rooms er tom - print ut ei rad med romNr osv
@@ -187,17 +187,21 @@ function showRoomWeekview(){
                 if (model.rooms[room].booked_dates) {
                     for (let booking of model.rooms[room].booked_dates) {
                         booking = new Date(booking);
-                        console.log(weekday + ' ' + booking);
-                        if (weekday.getTime() == booking.getTime()) {
-                            html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                        abooking = date_fixer(booking);
+                        aweekday = date_fixer(weekday);
+                        if (aweekday == abooking) {
+                           
+                            bookingNr = getBookId(room, booking);
+                            date = date_fixer(weekday); 
+                            html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${date}</td>`;
                             hasRun = true;
                         }
                     }
                 }
-
+    
                 if (!hasRun) {
-                    html += `<td class="notBooked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
-
+                    date = date_fixer(weekday);
+                    html += `<td class="notBooked">${date}</td>`;
                 }
 
 
