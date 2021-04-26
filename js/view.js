@@ -153,11 +153,12 @@ function showRoomWeekview(){
     let row2 = "";
 
     dateString = new Date();
+    dateString.setHours(02, 0,0,0)
     if (firstTime) {
         firstTime = false;
 
         week.push(new Date(dateString));
-
+        
         week.push(new Date(dateString.addDays(1)));
         week.push(new Date(dateString.addDays(2)));
         week.push(new Date(dateString.addDays(3)));
@@ -165,9 +166,10 @@ function showRoomWeekview(){
         week.push(new Date(dateString.addDays(5)));
         week.push(new Date(dateString.addDays(6)));
         week.push(new Date(dateString.addDays(7)));
+        
         for (let weekday of week) {
-            weekday.correctMonth();
-            html += '<th>' + weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear() + '</th>';
+            weekday = date_fixer(weekday);
+            html += '<th>' + weekday + '</th>';
         }
     }
     //om rooms er tom - print ut ei rad med romNr osv
@@ -185,16 +187,21 @@ function showRoomWeekview(){
                 if (model.rooms[room].booked_dates) {
                     for (let booking of model.rooms[room].booked_dates) {
                         booking = new Date(booking);
-                        if (weekday.getTime() == booking.getTime()) {
-                            html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                        abooking = date_fixer(booking);
+                        aweekday = date_fixer(weekday);
+                        if (aweekday == abooking) {
+                           
+                            bookingNr = getBookId(room, booking);
+                            date = date_fixer(weekday); 
+                            html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${date}</td>`;
                             hasRun = true;
                         }
                     }
                 }
-
+    
                 if (!hasRun) {
-                    html += `<td class="notBooked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
-
+                    date = date_fixer(weekday);
+                    html += `<td class="notBooked">${date}</td>`;
                 }
 
 
@@ -363,7 +370,8 @@ function updateShowBookingView() {
     html += '<p>Reserverte datoer: ';
     for (let date of model.bookings[bookingNr].dates) {
         date = new Date(date);
-        html += date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear() + ' -> ';
+        date = date_fixer(date);
+        html += date + ' -> ';
     }
     html += '</p>';
     html += '<button onclick="deleteBooking()" class="deleteButton"><i class="fas fa-trash-alt"></i> Slett reservasjon</button>';
@@ -443,14 +451,21 @@ function updateAdminSearchOnBookingNr() {
             html += '<p>Reserverte datoer: ';
             if (model.bookings[booking].dates) {
                 for (let date of model.bookings[booking].dates) {
-                    //date= new Date(date)
-                    html += date + ' -> ';
+                    date= new Date(date)
+                    adate = date_fixer(date);
+                    html += adate + ' -> ';
                 }
             }
 
             html += '</p>';
+<<<<<<< HEAD
             html += '<button onclick="deleteBooking()" class="deleteButton"><i class="fas fa-trash-alt"></i> Slett reservasjon</button>';
             html += '<button  onclick="setshowEditBooking()" class="alterButton"><i class="fas fa-redo"></i> Endre reservasjon</button>';
+=======
+            html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
+           
+            html += `<button  onclick="model.input.selectedBookingNr = '${model.bookings[booking].booking_number}'; setshowEditBooking()" class="alterButton">Endre reservasjon</button>`;
+>>>>>>> 3f36b95abe25a4bf9047481f30e6c1c103c94e24
             html += '</div>';
         }
     }
@@ -504,9 +519,8 @@ function updateAdminSearchOnDate() {
         week.push(new Date(dateString.addDays(6)));
         week.push(new Date(dateString.addDays(7)));
         for (let weekday of week) {
-            weekday.correctMonth();
-            console.log(weekday);
-            html += '<th>' + weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear() + '</th>';
+            weekday = date_fixer(weekday);
+            html += '<th>' + weekday + '</th>';
         }
     }
     //om rooms er tom - print ut ei rad med romNr osv
@@ -522,16 +536,21 @@ function updateAdminSearchOnDate() {
             if (model.rooms[room].booked_dates) {
                 for (let booking of model.rooms[room].booked_dates) {
                     booking = new Date(booking);
-                    if (weekday.getTime() == booking.getTime()) {
-                        html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                    abooking = date_fixer(booking);
+                    aweekday = date_fixer(weekday);
+                    if (aweekday == abooking) {
+                       
+                        bookingNr = getBookId(room, booking);
+                        date = date_fixer(weekday); 
+                        html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${date}</td>`;
                         hasRun = true;
                     }
                 }
             }
 
             if (!hasRun) {
-                html += `<td>${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
-
+                date = date_fixer(weekday);
+                html += `<td class="notBooked">${date}</td>`;
             }
 
 
@@ -587,7 +606,8 @@ function updateAdminView() {
     week.push(new Date(dateString.addDays(6)));
     week.push(new Date(dateString.addDays(7)));
     for (let weekday of week) {
-        html += '<th>' + weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear() + '</th>';
+        date = date_fixer(weekday);
+        html += '<th>' + date + '</th>';
     }
     let hasRun = false;
     //loop gjennom datoene fra model.bookings, og sjekk om dem er like
@@ -601,19 +621,21 @@ function updateAdminView() {
             if (model.rooms[room].booked_dates != undefined) {
                 for (let booking of model.rooms[room].booked_dates) {
                     booking = new Date(booking);
-                    if (weekday.getDate().toString() == booking.getDate().toString()) {
+                    abooking = date_fixer(booking);
+                    aweekday = date_fixer(weekday);
+                    if (aweekday == abooking) {
                        
                         bookingNr = getBookId(room, booking);
-                        console.log(bookingNr)  
-                        
-                        html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                        date = date_fixer(weekday); 
+                        html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${date}</td>`;
                         hasRun = true;
                     }
                 }
             }
 
             if (!hasRun) {
-                html += `<td class="notBooked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+                date = date_fixer(weekday);
+                html += `<td class="notBooked">${date}</td>`;
 
             }
 
@@ -717,7 +739,11 @@ function updateUserpanelView() {
                 }
             }
             html += `<br>`;
-            html += model.bookings[booking].dates;
+            for(date of model.bookings[booking].dates)
+            {
+                html += new Date(date) + '<br>';
+            }
+            
             html += `</div>`;
         }
     }

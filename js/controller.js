@@ -20,7 +20,6 @@ function getBookId(roomid, bookedDate){
                             
         if(model.bookings[books].dates && model.bookings[books].room_id == roomid){
             for(let bookedDates of model.bookings[books].dates){
-                console.log (bookedDates +"-"+ aDate)
                 if(bookedDates == aDate){
                     return books;
                 }
@@ -96,7 +95,7 @@ function alterbooking(bookingId){
             model.bookings[booking]={
                 room_id: romnr,
                 dates: dates,
-                userId: 3,
+                userId: model.bookings[booking].userId,
                 num_of_pers: model.input.num_of_pers,
                 booking_number: bookingId,
             }
@@ -353,6 +352,20 @@ function newUser(){
     let isUnique = true;
 
     let validEmail = isEmailValid(model.input.tempEmail);
+
+    //oppdatere users tabell.
+    var databaseUpdate = new Promise (function(resolve,reject){
+        database.ref().once('value', (snap) => {
+            resolve(snap.val())
+          })
+    })
+    var data =  databaseUpdate
+    model.rooms = data.rooms
+    for (user in data.users){
+        model.users[user] = data.users[user]
+    }
+    model.userId_counter = data.userId_counter
+
     for(u in model.users){
         if(model.users[u].personalia.email == model.input.tempEmail){ //epost er ikke unik 
            model.page.error = 'Eposten '+ model.input.tempEmail+ ' eksisterer fra før - velg ny epost';
@@ -361,8 +374,9 @@ function newUser(){
         }
     }
     if (isUnique && validEmail) { //epost er unik
-        let currentUser = model.userId_counter;
+        
         model.userId_counter ++
+        let currentUser = model.userId_counter;
         model.page.error = '';
         model.users[currentUser] = {
             password: model.input.tempPassw,
