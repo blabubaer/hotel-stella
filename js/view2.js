@@ -65,8 +65,6 @@ function updateView() {
         showSetUserOrPersonalia()
     }else if(model.page.page_pos == 'Edit Booking'){
         showEditBooking();
-    }else if(model.page.page_pos == 'room week'){
-        showRoomWeekview()
     }
 }
 function setHomeView(){
@@ -120,108 +118,9 @@ function setshowEditBooking(){
     model.page.page_pos = 'Edit Booking';
     updateView();
 }
-function setRoomWeekView(){
-    model.page.page_pos = 'room week'
-    updateView();
-}
-function showRoomWeekview(){
-    let html ='';
-    html += viewHeader();
-    html += `<table style = "width:100%">
-          <tr>
-            <th>romnr</th>
-            `;
-    let datesArray = [];
-    //dates = sort_by_key(model.bookings, 'date');
 
-    let firstTime = true;
-    Date.prototype.addDays = function (days) { //funker som fjell 
-        var date = new Date(this.valueOf());
-        date.setDate(date.getDate() + days);
-        return date;
-    }
-    Date.prototype.correctMonth = function () {
-        var date = new Date(this.valueOf());
-        date.setMonth(date.getMonth + 1)
-        return date
-    }
-
-    let week = [];
-    let rooms = [];
-
-    let row1 = "";
-    let row2 = "";
-
-    dateString = new Date();
-    dateString.setHours(02, 0,0,0)
-    if (firstTime) {
-        firstTime = false;
-
-        week.push(new Date(dateString));
-        
-        week.push(new Date(dateString.addDays(1)));
-        week.push(new Date(dateString.addDays(2)));
-        week.push(new Date(dateString.addDays(3)));
-        week.push(new Date(dateString.addDays(4))); /* Legger til en dato for hele uken */
-        week.push(new Date(dateString.addDays(5)));
-        week.push(new Date(dateString.addDays(6)));
-        week.push(new Date(dateString.addDays(7)));
-        
-        for (let weekday of week) {
-            weekday = date_fixer(weekday);
-            html += '<th>' + weekday + '</th>';
-        }
-    }
-    //om rooms er tom - print ut ei rad med romNr osv
-
-    let hasRun = false;
-    //loop gjennom datoene fra model.bookings, og sjekk om dem er like
-    //for hver booking skal det lages en td som markerer bookingen. For alle romnr som er booket skal det lages en tr. 
-    for (let room in model.rooms) {
-        if(room == model.input.selectedRoom){
-
-            html += `</tr><tr id="a${room.room_id}">`;
-            html += '<td>' + room + '</td>';
-            for (let weekday of week) {
-                hasRun = false;
-                if (model.rooms[room].booked_dates) {
-                    for (let booking of model.rooms[room].booked_dates) {
-                        booking = new Date(booking);
-                        abooking = date_fixer(booking);
-                        aweekday = date_fixer(weekday);
-                        if (aweekday == abooking) {
-                           
-                            bookingNr = getBookId(room, booking);
-                            date = date_fixer(weekday); 
-                            html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${date}</td>`;
-                            hasRun = true;
-                        }
-                    }
-                }
-    
-                if (!hasRun) {
-                    date = date_fixer(weekday);
-                    html += `<td class="notBooked">${date}</td>`;
-                }
-
-
-            }
-        }
-    }
-
-    html += '</tr>'
-
-
-
-
-    html += ` 
-        </table >`;
-        app.innerHTML =html;
-}
 function showEditBooking(){
     let html = '';
-    model.input.adminSearchBookingNr = model.input.selectedBookingNr; 
-    html += viewHeader();
     for (booking in model.bookings){
         if(model.bookings[booking].booking_number == model.input.adminSearchBookingNr ){
             let start_date = new Date(model.bookings[booking].dates[0]);
@@ -243,16 +142,14 @@ function showEditBooking(){
 
            
             console.log(end_date);
-           html+= `<div id="editBookingcss>"
-            <div class="flexbox1"><label for="startDato">Start Dato:</label>
-            <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${startdate}"></div>
-            <br>
-            <div class="flexbox2"> <label class="margin" for="sluttDato">Slutt Dato:</label>
-            <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${enddate}"></div>
-            <br>
-            <label class="margin" for="antallPersoner">Antall Voksene:</label>  
-            <select id="personer" type="text" name="antallPersoner" value="${model.bookings[booking].num_of_pers}" onchange="model.input.num_of_pers = this.value">
-            </div>`;
+            html+= `
+            <label for="startDato">Start Dato:</label>
+            <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${startdate}">
+            <br><label class="margin" for="sluttDato">Slutt Dato:</label>
+            <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${enddate}">
+            <br><label class="margin" for="antallPersoner">Antall Voksene:</label>  
+            <select id="personer" type="text" name="antallPersoner" value="${model.bookings[booking].num_of_pers} onchange="input_updater(this)">
+            `;
             for (i = 1; i<9;i++){
                 if(model.input.num_of_pers == i){
                     html += `
@@ -268,31 +165,28 @@ function showEditBooking(){
             html+=`
             </select>
             <br><label class="margin" for="romNr">Romtype:</label>  
-            <select id="rom" type="text" name="romNr" value="${model.bookings[booking].room_id}" onchange="model.input.romnr = this.value">
-
-
+            <select id="rom" type="text" name="romNr" value="${model.bookings[booking].room_id} onchange="input_updater(this)">
             
             `;
             for (let rom in model.rooms){
                 if(model.bookings[booking].room_id == rom){
                     html += `
-                        <option value="${model.rooms[rom].room_id}" selected="selected">${model.rooms[rom].room_type}</option>
+                        <option value="${model.rooms[rom].room_type}" selected="selected">${model.rooms[rom].room_type}</option>
                         `;
                 }
                 else {
                     html += `
-                    <option value="${model.rooms[rom].room_id}">${model.rooms[rom].room_type}</option>
+                    <option value="${model.rooms[rom].room_type}">${model.rooms[rom].room_type}</option>
                     `;
                 };
             };
-            html += `</select>
-            <button onclick="alterbooking('${booking}')">Save</button>`
+            html += `</select>`
         }
     }
     app.innerHTML = html;
 }
 function showSetUserOrPersonalia(){
-    let html=``;
+    let html;
     html += viewHeader();
     if(model.page.current_user == 2){
         html += `
@@ -366,12 +260,11 @@ function updateShowBookingView() {
     html += `<p>${model.rooms[model.bookings[bookingNr].room_id].room_prices}</p>`;
     html += `<p>Bookingnr: ${bookingNr}</p>`;
     html += `<p>Romnr: ${model.bookings[bookingNr].room_id}</p>`;
-    html += `<p>Antall personer: ${model.bookings[bookingNr].num_of_pers}</p>`;
+    html += `<p>Antall personer: ${model.bookings[bookingNr].num_pers}</p>`;
     html += '<p>Reserverte datoer: ';
     for (let date of model.bookings[bookingNr].dates) {
         date = new Date(date);
-        date = date_fixer(date);
-        html += date + ' -> ';
+        html += date.getDate() + '.' + date.getMonth() + '.' + date.getFullYear() + ' -> ';
     }
     html += '</p>';
     html += '<button onclick="deleteBooking()" class="deleteButton"><i class="fas fa-trash-alt"></i> Slett reservasjon</button>';
@@ -451,21 +344,14 @@ function updateAdminSearchOnBookingNr() {
             html += '<p>Reserverte datoer: ';
             if (model.bookings[booking].dates) {
                 for (let date of model.bookings[booking].dates) {
-                    date= new Date(date)
-                    adate = date_fixer(date);
-                    html += adate + ' -> ';
+                    //date= new Date(date)
+                    html += date + ' -> ';
                 }
             }
 
             html += '</p>';
-<<<<<<< HEAD
             html += '<button onclick="deleteBooking()" class="deleteButton"><i class="fas fa-trash-alt"></i> Slett reservasjon</button>';
             html += '<button  onclick="setshowEditBooking()" class="alterButton"><i class="fas fa-redo"></i> Endre reservasjon</button>';
-=======
-            html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
-           
-            html += `<button  onclick="model.input.selectedBookingNr = '${model.bookings[booking].booking_number}'; setshowEditBooking()" class="alterButton">Endre reservasjon</button>`;
->>>>>>> 3f36b95abe25a4bf9047481f30e6c1c103c94e24
             html += '</div>';
         }
     }
@@ -519,8 +405,9 @@ function updateAdminSearchOnDate() {
         week.push(new Date(dateString.addDays(6)));
         week.push(new Date(dateString.addDays(7)));
         for (let weekday of week) {
-            weekday = date_fixer(weekday);
-            html += '<th>' + weekday + '</th>';
+            weekday.correctMonth();
+            console.log(weekday);
+            html += '<th>' + weekday.getDate() + '.' + weekday.getMonth() + '.' + weekday.getFullYear() + '</th>';
         }
     }
     //om rooms er tom - print ut ei rad med romNr osv
@@ -536,21 +423,16 @@ function updateAdminSearchOnDate() {
             if (model.rooms[room].booked_dates) {
                 for (let booking of model.rooms[room].booked_dates) {
                     booking = new Date(booking);
-                    abooking = date_fixer(booking);
-                    aweekday = date_fixer(weekday);
-                    if (aweekday == abooking) {
-                       
-                        bookingNr = getBookId(room, booking);
-                        date = date_fixer(weekday); 
-                        html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${date}</td>`;
+                    if (weekday.getTime() == booking.getTime()) {
+                        html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
                         hasRun = true;
                     }
                 }
             }
 
             if (!hasRun) {
-                date = date_fixer(weekday);
-                html += `<td class="notBooked">${date}</td>`;
+                html += `<td>${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
+
             }
 
 
@@ -606,8 +488,7 @@ function updateAdminView() {
     week.push(new Date(dateString.addDays(6)));
     week.push(new Date(dateString.addDays(7)));
     for (let weekday of week) {
-        date = date_fixer(weekday);
-        html += '<th>' + date + '</th>';
+        html += '<th>' + weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear() + '</th>';
     }
     let hasRun = false;
     //loop gjennom datoene fra model.bookings, og sjekk om dem er like
@@ -615,27 +496,21 @@ function updateAdminView() {
     for (let room in model.rooms) {
         html += `</tr><tr id="a${room}">`;
        
-        html += `<td onclick=" model.input.selectedRoom = ${room}; setRoomWeekView();">${room}</td>`;
+        html += '<td>' + room + '</td>';
         for (let weekday of week) {
             hasRun = false;
             if (model.rooms[room].booked_dates != undefined) {
                 for (let booking of model.rooms[room].booked_dates) {
                     booking = new Date(booking);
-                    abooking = date_fixer(booking);
-                    aweekday = date_fixer(weekday);
-                    if (aweekday == abooking) {
-                       
-                        bookingNr = getBookId(room, booking);
-                        date = date_fixer(weekday); 
-                        html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${date}</td>`;
+                    if (weekday.getDate().toString() == booking.getDate().toString()) {
+                        html += `<td class="booked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
                         hasRun = true;
                     }
                 }
             }
 
             if (!hasRun) {
-                date = date_fixer(weekday);
-                html += `<td class="notBooked">${date}</td>`;
+                html += `<td class="notBooked">${weekday.getDate() + '.' + (weekday.getMonth() + 1) + '.' + weekday.getFullYear()}</td>`;
 
             }
 
@@ -739,11 +614,7 @@ function updateUserpanelView() {
                 }
             }
             html += `<br>`;
-            for(date of model.bookings[booking].dates)
-            {
-                html += new Date(date) + '<br>';
-            }
-            
+            html += model.bookings[booking].dates;
             html += `</div>`;
         }
     }
@@ -784,7 +655,7 @@ function homepageview() {
     html += viewHeader();
     html += searchBannerView();
     html += `
-       
+
         <div id="map">
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d32685.15956757092!2d9.603076187783627!3d59.2022658295007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4647212b918718bb%3A0x97b76640a65e8514!2sClarion%20Collection%20Hotel%20Bryggeparken!5e0!3m2!1sno!2sno!4v1615902497588!5m2!1sno!2sno" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         </div>
@@ -830,7 +701,7 @@ function updateSearchView() {
             <img src='${img_url}' alt="Standard" width="350" height="200">
             <p>Room Type: ${room.room_type}</p>
             <p>Price: ${model.prices[room.room_type]}</p>
-             <button onclick="put_in_cart(${room.room_id})" class="btn"><i class="fas fa-luggage-cart"></i> Legg til i handlevogn</button>
+            <button onclick="put_in_cart(${room.room_id})" class="btn"><i class="fas fa-luggage-cart"></i> Legg til i handlevogn</button>
             </div>
         </div>
         
@@ -918,7 +789,7 @@ function searchBannerView() {
                     `
                 }
             }
-            html += `</select>
+            html+=`</select>
             <button class="btn small" onclick="setSearchView()"><i class="fas fa-search"></i>Søk</button>
             </div>`;
     return html
@@ -927,7 +798,7 @@ function searchBannerView() {
 function viewHeader() {
     let html = '<div class="header_overdiv">';
     html += `<div class="headerView">
-            <h1 onclick="setHomeView()"><span>Hotel</span>Stella - ${model.page.page_pos}</h1></div>`;
+            <h1 onclick="setHomeView()"><span>Hotel</span>Stella - ${model.page.page_pos}</h1>`;
 
     if (model.users[model.page.current_user].role == 'guest') {
         html += `<div class="logout"><span onclick="setLoginView()"><i class="fas fa-sign-in-alt"></i> Login </span>
@@ -942,7 +813,7 @@ function viewHeader() {
     }
     else if (model.users[model.page.current_user].role == 'user') {
         html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name} </span><span onclick="logout()"><i class="fas fa-sign-out-alt"></i>  logout </span> <span onclick="setCart()"><i class="fas fa-luggage-cart"></i>Handlevogn</span></div></div>`;
-    }
+  }
 
     html += `</div>`
     return html
@@ -955,7 +826,7 @@ function footerView() {
 
             <div class="footer-section about">
                 <h1 class="logo-text" onclick="setHomeView()"><span>Hotel</span>Stella</h1>
-              
+                <br>
                 <p>
                    Hotel Stella ligger i Skien og er Byens vakkreste hotel
                 </p>
@@ -999,6 +870,7 @@ function footerView() {
          </div>`;
     return html
 }
+
 function updatebookingview() {
     var html = ``
     html += viewHeader()
@@ -1035,7 +907,7 @@ function updatebookingview() {
     <label for="tel">Telefon:</label><br>
     <input name="tel"  onchange="model.input.tempTel = this.value" value="${model.users[model.page.current_user].personalia.tel_num}"><br>
     <button style="    width: 159px;
-    height: 38px; margin-top:20px;" onclick="storePersonalia()" class="btn"><i class="fas fa-save"></i> Lagre</button>   
+    height: 38px; margin-top:20px;" onclick="storePersonalia()" class="btn"><i class="fas fa-save"></i> Lagre</button>
     </div> 
     `
 
