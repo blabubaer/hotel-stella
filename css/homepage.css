@@ -233,3 +233,34 @@ h2{
     height: 250px;
     margin:0px;
 }
+.flexbox1 {
+    width: 200px;
+    margin: 10px;
+    border: 3px solid #303036;
+    background-color: #d3d3d3;
+}
+.flexbox2 {
+    width: 200px;
+    margin: 10px;
+    border: 3px solid #303036;
+    background-color: #d3d3d3;
+}
+/*.margin {
+    width: 200px;
+    margin: 10px;
+    border: 3px solid #303036;
+    background-color: #d3d3d3;
+}*/
+.flexbox3 {
+    width: 200px;
+    margin: 10px;
+    border: 3px solid #303036;
+    background-color: #d3d3d3;
+}
+/*
+#personer {
+    width: 200px;
+    margin: 10px;
+    border: 3px solid #303036;
+    background-color: #d3d3d3;
+}*/

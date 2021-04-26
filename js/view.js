@@ -236,14 +236,16 @@ function showEditBooking(){
 
            
             console.log(end_date);
-            html+= `
-            <label for="startDato">Start Dato:</label>
-            <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${startdate}">
-            <br><label class="margin" for="sluttDato">Slutt Dato:</label>
-            <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${enddate}">
-            <br><label class="margin" for="antallPersoner">Antall Voksene:</label>  
+           html+= `<div id="editBookingcss>"
+            <div class="flexbox1"><label for="startDato">Start Dato:</label>
+            <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${startdate}"></div>
+            <br>
+            <div class="flexbox2"> <label class="margin" for="sluttDato">Slutt Dato:</label>
+            <input id="sluttDatoField" type="date" name="sluttDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${enddate}"></div>
+            <br>
+            <label class="margin" for="antallPersoner">Antall Voksene:</label>  
             <select id="personer" type="text" name="antallPersoner" value="${model.bookings[booking].num_of_pers}" onchange="model.input.num_of_pers = this.value">
-            `;
+            </div>`;
             for (i = 1; i<9;i++){
                 if(model.input.num_of_pers == i){
                     html += `
@@ -260,6 +262,8 @@ function showEditBooking(){
             </select>
             <br><label class="margin" for="romNr">Romtype:</label>  
             <select id="rom" type="text" name="romNr" value="${model.bookings[booking].room_id}" onchange="model.input.romnr = this.value">
+
+
             
             `;
             for (let rom in model.rooms){
