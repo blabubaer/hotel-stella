@@ -60,17 +60,15 @@ function alterbooking(bookingId){
            
            // hvorfor sletter ikke denne første datoen ????? hvorfor må den kjøres 2 ganger ???
                 for(let i =0; i < model.bookings[booking].dates.length; i++){ 
-                   console.log(i);
+                   
                     if(model.rooms[model.bookings[booking].room_id].booked_dates.includes(model.bookings[booking].dates[i]) ){
                         model.rooms[model.bookings[booking].room_id].booked_dates.splice(model.rooms[model.bookings[booking].room_id].booked_dates.indexOf(model.bookings[booking].dates[i]), 1);
-                        console.log( model.rooms[model.bookings[booking].room_id].booked_dates)
                     }
                 }
                 for(let i =0; i < model.bookings[booking].dates.length; i++){ 
-                    console.log(i);
+                    
                      if(model.rooms[model.bookings[booking].room_id].booked_dates.includes(model.bookings[booking].dates[i]) ){
                          model.rooms[model.bookings[booking].room_id].booked_dates.splice(model.rooms[model.bookings[booking].room_id].booked_dates.indexOf(model.bookings[booking].dates[i]), 1);
-                         console.log( model.rooms[model.bookings[booking].room_id].booked_dates)
                      }
                  }
                 model.bookings[booking].dates.splice(0, model.bookings[booking].dates.length);
@@ -105,6 +103,8 @@ function alterbooking(bookingId){
             
         }
     }
+    model.page.page_pos = 'User panel'
+    updateView()
 }
 
 function storeGuestPersonalia(){
@@ -134,6 +134,7 @@ function storeGuestPersonalia(){
 
 
 function login (){
+    let counter = 0
     for (i in model.users){
         if(model.input.tempUser == model.users[i].personalia.email && model.input.tempPassw == model.users[i].password){
             model.page.current_user = model.users[i].userId;
@@ -150,12 +151,17 @@ function login (){
             }
             model.input.tempUser = '';
             model.input.tempPassw = '';
-            
+            model.page.error = ''
             updateView();
+            break
         }else{
-            model.page.error = 'Galt brukernavn eller passord';
-            updateView();
+            counter ++
         }
+    }
+    if(counter == Object.keys(model.users).length){
+        model.page.error = "Galt username eller passord!"
+        updateView()
+
     }
 }
 function logout(){
@@ -348,7 +354,7 @@ function storePersonalia(){
     updateView();
 }
 
-function newUser(){
+async function newUser(){
     let isUnique = true;
 
     let validEmail = isEmailValid(model.input.tempEmail);
@@ -359,7 +365,7 @@ function newUser(){
             resolve(snap.val())
           })
     })
-    var data =  databaseUpdate
+    var data =  await databaseUpdate
     model.rooms = data.rooms
     for (user in data.users){
         model.users[user] = data.users[user]
@@ -374,7 +380,6 @@ function newUser(){
         }
     }
     if (isUnique && validEmail) { //epost er unik
-        
         model.userId_counter ++
         let currentUser = model.userId_counter;
         model.page.error = '';
