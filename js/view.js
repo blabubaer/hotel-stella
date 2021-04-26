@@ -458,14 +458,9 @@ function updateAdminSearchOnBookingNr() {
             }
 
             html += '</p>';
-<<<<<<< HEAD
-            html += '<button onclick="deleteBooking()" class="deleteButton"><i class="fas fa-trash-alt"></i> Slett reservasjon</button>';
-            html += '<button  onclick="setshowEditBooking()" class="alterButton"><i class="fas fa-redo"></i> Endre reservasjon</button>';
-=======
             html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
            
             html += `<button  onclick="model.input.selectedBookingNr = '${model.bookings[booking].booking_number}'; setshowEditBooking()" class="alterButton">Endre reservasjon</button>`;
->>>>>>> 3f36b95abe25a4bf9047481f30e6c1c103c94e24
             html += '</div>';
         }
     }
