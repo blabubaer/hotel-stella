@@ -243,14 +243,10 @@ function deleteBooking(){
     let roomNr = model.bookings[bookingId].room_id
     let booked_dates = model.bookings[bookingId].dates
     for ( i in booked_dates){
-        console.log(i);
-            console.log(i + "in the iffy");
-            model.rooms[roomNr].booked_dates.splice(model.rooms[roomNr].booked_dates.indexOf(booked_dates[i]),1)
-       
-        
+            model.rooms[roomNr].booked_dates.splice(model.rooms[roomNr].booked_dates.indexOf(booked_dates[i]),1)        
     }
     delete model.bookings[bookingId]
-    database.ref("bookings/" + bookingId).set('')
+    database.ref("bookings/" + bookingId).remove()
     database.ref("rooms/"+ roomNr).set(model.rooms[roomNr])
    // test this with new model before deleting below
     
