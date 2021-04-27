@@ -40,7 +40,7 @@ h2{
     margin: 10px;
     padding: 10px;
     margin-right: 20px;
-    padding-right: 0px;
+    padding-right: 10px;
 }
 .logout{
     padding: 10px;
@@ -264,3 +264,12 @@ h2{
     border: 3px solid #303036;
     background-color: #d3d3d3;
 }*/
+.logout span{
+    border: 1px solid black;
+    border-radius: 5px;
+    margin: 0 10px 0 10px;
+    padding: 0 5px 0 5px;
+    background-color: green;
+    color: white;
+    cursor:pointer;
+}

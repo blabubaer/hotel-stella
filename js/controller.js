@@ -29,7 +29,30 @@ function getBookId(roomid, bookedDate){
         }
     }
 }
+function newRoom() {
+    if (model.input.roomtype != undefined && model.input.roomprice != undefined && model.input.beds != undefined
+        && model.input.kids != undefined && model.input.imgurl != undefined && model.input.roomnr != undefined) {
+        var rooms = model.rooms;
+        rooms[model.input.roomnr] = {
+            room_id: model.input.roomnr,
+            room_type: model.input.roomtype, //or business, premium
+            room_prices: model.input.roomprice,
+            beds: model.input.beds,
+            kids: model.input.kids,
+            booked_dates: [],
+            img_url: model.input.imgurl
+        }
+        database.ref("rooms").set(model.rooms)
+        model.input.roomnr = undefined;
+        model.input.roomtype = undefined;
+        model.input.roomprice = undefined;
+        model.input.beds = undefined;
+        model.input.kids = undefined;
+        model.input.imgurl = undefined;
+        setAdminPanel();
+    }
 
+}
 function alterbooking(bookingId){
     Date.prototype.addDays = function (days) { //funker som fjell 
         var date = new Date(this.valueOf());
@@ -276,10 +299,8 @@ function delete_from_cart(bookingnr){
     
 
 }
-function deleteBooking(){
-    
-    let bookingId = model.input.adminSearchBookingNr;
-    
+function deleteBooking(bookingId){
+       
     let roomNr = model.bookings[bookingId].room_id
     let booked_dates = model.bookings[bookingId].dates
     for ( i in booked_dates){
@@ -288,6 +309,8 @@ function deleteBooking(){
     delete model.bookings[bookingId]
     database.ref("bookings/" + bookingId).remove()
     database.ref("rooms/"+ roomNr).set(model.rooms[roomNr])
+    model.page.page_pos = 'User panel'
+    updateView()
    // test this with new model before deleting below
     
 

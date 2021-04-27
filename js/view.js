@@ -173,10 +173,49 @@ function setAddNewRoomView() {
     model.page.page_pos = 'Legg til rom';
     updateView();
 }
-
 function AddNewRoomView() {
     html = ''
     html += viewHeader();
+    html += `<div id="editBookingcss">
+        <br><label for="roomnr">Romnr:</label><input type="text" name="roomnr" onchange="model.input.roomnr = this.value" value="" /> 
+        <br><label for="roomType">Romtype:</label><input type="text" name="roomType" onchange="model.input.roomtype = this.value" value="" /> 
+        <br><label for="price">Pris:</label><input type="text" name="price" onchange="model.input.roomprice = this.value" value="" />    
+        <br><label for="antallPersoner">Sengeplasser:</label><select id="personer" type="text" name="antallPersoner" value="0" onchange="model.input.beds = this.value">`;
+
+    for (i = 0; i < 9; i++) {
+        if (0 == i) {
+            html += `
+                        <option value="" selected="selected"></option>
+                        `;
+        }
+        else {
+            html += `
+                    <option value="${i}">${i}</option>
+                    `;
+        };
+    };
+    html += '</select>'
+    html += `
+            <br><label for="antallbarn">Barneplasser:</label><select id="personer" type="text" name="antallbarn" value="0" onchange="model.input.kids = this.value">`;
+
+    for (i = 0; i < 9; i++) {
+        if (0 == i) {
+            html += `
+                        <option value="" selected="selected"></option>
+                        `;
+        }
+        else {
+            html += `
+                    <option value="${i}">${i}</option>
+                    `;
+        };
+    };
+    html += '</select>'
+    html += `<br><label for="imgurl">Bilde:</label><input type="text" name="imgurl" onchange="model.input.imgurl = this.value" 
+            value="" /></div> `;
+    html += `<button onclick="newRoom()" class="btn"><i class="fas fa-save"></i> Lagre</button>`;
+
+
     app.innerHTML = html;
 }
 function showEditRoom() {
@@ -496,7 +535,7 @@ function updateShowBookingView() {
     enddate = date_fixer(new Date(model.bookings[bookingNr].dates[model.bookings[bookingNr].dates.length-1]));
     html += startdate + ' -> ' + enddate;
     html += '</p>';
-    html += '<button onclick="deleteBooking()" class="deleteButton"><i class="fas fa-trash-alt"></i>Slett reservasjon</button>';
+    html += `<button onclick="deleteBooking('${bookingNr}')" class="deleteButton"><i class="fas fa-trash-alt"></i>Slett reservasjon</button>`;
     html += '<button onclick="setshowEditBooking()" class="alterButton"><i class="fas fa-redo"></i>Endre reservasjon</button>';
     html += '</div></div>';
             
@@ -593,7 +632,7 @@ function updateAdminSearchOnBookingNr() {
             }
 
             html += '</p>';
-            html += '<button onclick="deleteBooking()" class="deleteButton">Slett reservasjon</button>';
+            html += `<button onclick="deleteBooking('${model.bookings[booking].booking_number}')" class="deleteButton">Slett reservasjon</button>`;
             hasnotRun = false;
             html += `<button  onclick="model.input.selectedBookingNr = '${model.bookings[booking].booking_number}'; setshowEditBooking()" class="alterButton">Endre reservasjon</button>`;
             html += '</div>';
@@ -1090,7 +1129,10 @@ function viewHeader() {
                 <span onclick="setCart()"><i class="fas fa-luggage-cart"></i> Handlevogn</span></div></div>`;
 
     } else if (model.users[model.page.current_user].role == 'admin') {
-        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span><span onclick="setAdminPanel()"><i class="fas fa-ad"></i>admin </span><span onclick="logout()"><i class="fas fa-sign-out-alt"></i> logout</span></div></div>`;
+        html += `<div class="logout"><span id="login" onclick="setUserPanel()">${model.users[model.page.current_user].personalia.first_name}</span>
+        <span onclick="setAdminPanel()"><i class="fas fa-ad"></i> admin </span>
+<span onclick="setAddNewRoomView()">Legg til nytt rom</span>
+<span onclick="logout()"><i class="fas fa-sign-out-alt"></i> logout</span></div></div>`;
 
     }
     else if (model.users[model.page.current_user].role == 'user') {
