@@ -37,8 +37,8 @@ async function start() {
     
     var cookie = document.cookie
     if(cookie != ""){
-        var start = cookie.indexOf("=")
-        var u_id = cookie.substring(start+1)
+        var start = cookie.indexOf("user_id")
+        var u_id = cookie.substring(start+8)
         model.page.current_user = parseInt(u_id) 
     }
     else{
@@ -67,7 +67,6 @@ async function start() {
             document.cookie = newcookie
         
     }
-    console.log(cookie)
     
     updateView()
 
@@ -405,7 +404,6 @@ function showEditBooking(){
             }
 
            
-            console.log(end_date);
            html+= `<div id="editBookingcss>"
             <div class="flexbox1"><label for="startDato">Start Dato:</label>
             <input type="date" name="startDato" onchange="input_updater(this)" min='${date_fixer(new Date())}' value="${startdate}"></div>
@@ -602,8 +600,6 @@ function updateAdminSearchOnBookingNr() {
     //sort in loop smallest date first. create view with first date first. and show for a week. 
     hasnotRun = true;
     for (let booking in model.bookings) {
-        console.log(typeof booking)
-        console.log(model.bookings[booking].room_id)
         if (booking == model.input.adminSearchBookingNr) {
             html += '<div class="bookingnrWrapper">';
             for (let rom in model.rooms) {
