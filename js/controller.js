@@ -109,8 +109,7 @@ function alterbooking(bookingId){
 
 function storeGuestPersonalia(){
     
-    let currentUser = model.userId_counter;
-        model.userId_counter ++
+    let currentUser = model.page.current_user;
         model.page.error = '';
         model.users[currentUser] = {
             role: 'guest',
@@ -124,21 +123,53 @@ function storeGuestPersonalia(){
                 email: model.input.tempEmail,
                 tel_num: model.input.tempTel,
             },
-            cart: [] = model.users[2].cart
+            cart: [] = model.users[currentUser].cart
         };
-        model.page.current_user = currentUser;
         updateView();
 }
 
+function editRoom() {
 
+    if (model.input.roomtype != undefined) {
+        model.rooms[model.input.selectedRoom].room_type = model.input.roomtype;
+    }
+    if (model.input.roomprice != undefined) {
+        model.rooms[model.input.selectedRoom].room_prices = model.input.roomprice;
+    }
+    if (model.input.beds != undefined) {
+        model.rooms[model.input.selectedRoom].beds = model.input.beds;
+    }
+    if (model.input.kids != undefined) {
+        model.rooms[model.input.selectedRoom].kids = model.input.kids;
+    }
+    if (model.input.imgurl != undefined) {
+        model.rooms[model.input.selectedRoom].img_url = model.input.imgurl;
+    }
+
+    database.ref("rooms").set(model.rooms)
+    model.input.imgurl = undefined;
+    model.input.kids = undefined;
+    model.input.beds = undefined;
+    model.input.roomprice = undefined;
+    model.input.roomtype = undefined;
+    setRoomWeekView();
+
+}
 
 
 function login (){
     let counter = 0
     for (i in model.users){
         if(model.input.tempUser == model.users[i].personalia.email && model.input.tempPassw == model.users[i].password){
+            delete model.users[model.page.current_user]
+            database.ref('users/'+model.page.current_user).remove()
             model.page.current_user = model.users[i].userId;
-            console.log(model.page.page_pos);
+            //cookie-creation
+            var ex_date = new Date()
+            ex_date.setTime(ex_date.getTime()+(30*24*60*60*1000))
+            var newcookie ="user_id="+model.page.current_user+ ";expires="+ex_date + ";path=/";
+            document.cookie = newcookie
+
             if (model.users[model.page.current_user].role == 'admin' && model.page.page_pos != 'Personalia cart') {
                 setAdminPanel();
             } else if(model.page.page_pos == 'Personalia cart'){
@@ -163,6 +194,7 @@ function login (){
         updateView()
 
     }
+    
 }
 function logout(){
     model.page.current_user = 2; 
@@ -211,6 +243,14 @@ function put_in_cart(roomId){
         model.users[model.page.current_user].cart = [booking]                
     }
     database.ref("users/"+ model.page.current_user).set(model.users[model.page.current_user])
+
+    for (var i=0; i< model.page.search_results.length;i++){
+        if( model.page.search_results[i].room_id == roomId) {
+            model.page.search_results.splice(i,1)
+            
+        }
+    }
+
 
     updateView()
         
@@ -347,6 +387,7 @@ function storePersonalia(){
     if (model.input.tempTel != undefined && model.input.tempTel != '') {
         model.users[model.page.current_user].personalia.tel_num = model.input.tempTel;
     }
+    database.ref('users/'+model.page.current_user).set(model.users[model.page.current_user])
     updateView();
 }
 
@@ -366,7 +407,6 @@ async function newUser(){
     for (user in data.users){
         model.users[user] = data.users[user]
     }
-    model.userId_counter = data.userId_counter
 
     for(u in model.users){
         if(model.users[u].personalia.email == model.input.tempEmail){ //epost er ikke unik 
@@ -376,8 +416,7 @@ async function newUser(){
         }
     }
     if (isUnique && validEmail) { //epost er unik
-        model.userId_counter ++
-        let currentUser = model.userId_counter;
+        let currentUser = model.page.current_user;
         model.page.error = '';
         model.users[currentUser] = {
             password: model.input.tempPassw,
@@ -467,12 +506,12 @@ function search() {
     }
     //available_rooms empty
     if(available_rooms.length === 0) {
-        model.page.error = "No rooms available during the chosen dates. Please choose another time for your stay.";
+        model.page.error = "Ingen rom er ledige på valgt dato. Vennligst velg en annen dato.";
         return
     }
     //check available_rooms if enough rooms available
     else if(available_rooms.length < num_rooms) {
-        model.page.error = "There are not enough rooms during the dates you have chosen"
+        model.page.error = "Ingen rom er ledige på valgt dato. Vennligst velg en annen dato."
         return
     }
    

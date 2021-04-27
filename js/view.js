@@ -32,8 +32,45 @@ async function start() {
     
     //UserID_counter
     model.userId_counter = data.userId_counter
-    console.log(model.userId_counter)
+    
+    //Cookie Creation
+    
+    var cookie = document.cookie
+    if(cookie != ""){
+        var start = cookie.indexOf("=")
+        var u_id = cookie.substring(start+1)
+        model.page.current_user = parseInt(u_id) 
+    }
+    else{
+        model.userId_counter ++
+        model.users[model.userId_counter] = {
+            password: "",
+            role: 'guest',
+            userId: model.userId_counter,
+            personalia: {
+                first_name: '',
+                last_name: '',
+                street: "",
+                city: "",
+                country: "",
+                email: "",
+                tel_num: "",
+            },
+            list_of_bookings: []
+        };
+        model.page.current_user=model.userId_counter
+        database.ref('users/' + model.page.current_user).set(model.users[model.page.current_user]);
+        database.ref('userId_counter').set(model.userId_counter);
+        var ex_date = new Date()
+            ex_date.setTime(ex_date.getTime()+(30*24*60*60*1000))
+            var newcookie ="user_id="+model.page.current_user+ ";expires="+ex_date + ";path=/";
+            document.cookie = newcookie
+        
+    }
+    console.log(cookie)
+    
     updateView()
+
 }
 start()
 function updateView() {
@@ -67,6 +104,10 @@ function updateView() {
         showEditBooking();
     }else if(model.page.page_pos == 'room week'){
         showRoomWeekview()
+    } else if (model.page.page_pos == 'Rediger rom') {
+        showEditRoom();
+    } else if (model.page.page_pos == 'Legg til rom') {
+        AddNewRoomView();
     }
 }
 function setHomeView(){
@@ -124,8 +165,71 @@ function setRoomWeekView(){
     model.page.page_pos = 'room week'
     updateView();
 }
-function showRoomWeekview(){
-    let html ='';
+function setShowEditRoom() {
+    model.page.page_pos = 'Rediger rom';
+    updateView();
+}
+function setAddNewRoomView() {
+    model.page.page_pos = 'Legg til rom';
+    updateView();
+}
+
+function AddNewRoomView() {
+    html = ''
+    html += viewHeader();
+    app.innerHTML = html;
+}
+function showEditRoom() {
+    html = '';
+    /**room_id:101,
+            room_type: "Standart", //or business, premium
+            room_prices: "1000kr",
+            beds : 2,
+            kids : 1,
+            booked_dates: [],
+            img_url: */
+    html += viewHeader();
+    html += `<div id="editBookingcss">
+        <br><label for="roomType">Romtype:</label><input type="text" name="roomType" onchange="model.input.roomtype = this.value" value="${model.rooms[model.input.selectedRoom].room_type}" /> 
+        <br><label for="price">Pris:</label><input type="text" name="price" onchange="model.input.roomprice = this.value" value="${model.rooms[model.input.selectedRoom].room_prices}" />    
+        <br><label for="antallPersoner">Sengeplasser:</label><select id="personer" type="text" name="antallPersoner" value="${model.rooms[model.input.selectedRoom].beds}" onchange="model.input.beds = this.value">`;
+
+    for (i = 1; i < 9; i++) {
+        if (model.rooms[model.input.selectedRoom].beds == i) {
+            html += `
+                        <option value="${i}" selected="selected">${i}</option>
+                        `;
+        }
+        else {
+            html += `
+                    <option value="${i}">${i}</option>
+                    `;
+        };
+    };
+    html += '</select>'
+    html += `
+            <br><label for="antallbarn">Barneplasser:</label><select id="personer" type="text" name="antallbarn" value="${model.rooms[model.input.selectedRoom].kids}" onchange="model.input.kids = this.value">`;
+
+    for (i = 1; i < 9; i++) {
+        if (model.rooms[model.input.selectedRoom].kids == i) {
+            html += `
+                        <option value="${i}" selected="selected">${i}</option>
+                        `;
+        }
+        else {
+            html += `
+                    <option value="${i}">${i}</option>
+                    `;
+        };
+    };
+    html += '</select>'
+    html += `<br><label for="imgurl">Bilde:</label><input type="text" name="imgurl" onchange="model.input.imgurl = this.value" value="${model.rooms[model.input.selectedRoom].img_url}" /></div> `;
+    html += '<button onclick="editRoom()" class="alterButton"><i class="fas fa-redo"></i>Endre rom</button>';
+
+    app.innerHTML = html;
+}
+function showRoomWeekview() {
+    let html = '';
     html += viewHeader();
     html += `<table style = "width:100%">
           <tr>
@@ -153,12 +257,12 @@ function showRoomWeekview(){
     let row2 = "";
 
     dateString = new Date();
-    dateString.setHours(02, 0,0,0)
+    dateString.setHours(02, 0, 0, 0)
     if (firstTime) {
         firstTime = false;
 
         week.push(new Date(dateString));
-        
+
         week.push(new Date(dateString.addDays(1)));
         week.push(new Date(dateString.addDays(2)));
         week.push(new Date(dateString.addDays(3)));
@@ -166,7 +270,7 @@ function showRoomWeekview(){
         week.push(new Date(dateString.addDays(5)));
         week.push(new Date(dateString.addDays(6)));
         week.push(new Date(dateString.addDays(7)));
-        
+
         for (let weekday of week) {
             weekday = date_fixer(weekday);
             html += '<th>' + weekday + '</th>';
@@ -177,8 +281,26 @@ function showRoomWeekview(){
     let hasRun = false;
     //loop gjennom datoene fra model.bookings, og sjekk om dem er like
     //for hver booking skal det lages en td som markerer bookingen. For alle romnr som er booket skal det lages en tr. 
+
+    /*room_id:101,
+    room_type: "Standart", //or business, premium
+    room_prices: "1000kr",
+    beds : 2,
+    kids : 1,
+    booked_dates: [],
+    img_url:*/
+
     for (let room in model.rooms) {
-        if(room == model.input.selectedRoom){
+        if (room == model.input.selectedRoom) {
+            html += `<img src="${model.rooms[room].img_url}" width="400px"> `
+            html += '<br><p>Romtype:' + model.rooms[room].room_type; + '</p>'
+            html += '<br><p>Rompris:' + model.rooms[room].room_prices + '</p>';
+            html += '<br><p>Sengeplasser:' + model.rooms[room].beds + '</p>';
+            html += '<br><p>Sengeplasser til barn:' + model.rooms[room].kids + '</p><br>';
+        }
+    }
+    for (let room in model.rooms) {
+        if (room == model.input.selectedRoom) {
 
             html += `</tr><tr id="a${room.room_id}">`;
             html += '<td>' + room + '</td>';
@@ -190,15 +312,15 @@ function showRoomWeekview(){
                         abooking = date_fixer(booking);
                         aweekday = date_fixer(weekday);
                         if (aweekday == abooking) {
-                           
+
                             bookingNr = getBookId(room, booking);
-                            date = date_fixer(weekday); 
+                            date = date_fixer(weekday);
                             html += `<td class="booked" onclick="model.input.selectedBookingNr = '${bookingNr}'; setShowBookingView();">${date}</td>`;
                             hasRun = true;
                         }
                     }
                 }
-    
+
                 if (!hasRun) {
                     date = date_fixer(weekday);
                     html += `<td class="notBooked">${date}</td>`;
@@ -216,7 +338,9 @@ function showRoomWeekview(){
 
     html += ` 
         </table >`;
-        app.innerHTML =html;
+    html += '<button onclick="setShowEditRoom()" class="alterButton"><i class="fas fa-redo"></i>Endre rom</button>';
+
+    app.innerHTML = html;
 }
 function showEditBooking(){
     let html = '';
@@ -381,10 +505,8 @@ function updateShowBookingView() {
 }
 function updateCartView() {
     var html = ''
-    var chosen_room
     html += viewHeader();
     if (model.users[model.page.current_user].cart && model.users[model.page.current_user].cart.length != 0) {
-        console.log('test')
         for (booking of model.users[model.page.current_user].cart) {
             for (room in model.rooms) {
                 if (model.rooms[room].room_id == booking.room_id) {
@@ -410,7 +532,7 @@ function updateCartView() {
         }
     }
     else {
-        html += `<h1>Your shopping Cart is empty</h1>`
+        html += `<h1>Din handlevogn er tom.</h1>`
     }
 
     html += footerView();
@@ -475,13 +597,10 @@ function updateAdminSearchOnBookingNr() {
             hasnotRun = false;
             html += `<button  onclick="model.input.selectedBookingNr = '${model.bookings[booking].booking_number}'; setshowEditBooking()" class="alterButton">Endre reservasjon</button>`;
             html += '</div>';
-        } else {
-            if (hasnotRun) {
-                html += `<h2>finner ikke bookingen</h2>`
-                hasnotRun = false;
-            }
-           
-        }
+        } 
+    }
+    if (hasnotRun) {
+        html += `<h2>finner ikke bookingen</h2>`
     }
 
     html += ` </div>`;
@@ -845,36 +964,25 @@ function updateSearchView() {
     html += viewHeader();
     html += searchBannerView();
 
-    if(model.page.search_results.length == 0){
+    if(model.page.search_results.length == 0 && model.page.error.length > 0){
         html += `
         <h1>${model.page.error}</h1>
         `
-
     }
+    if(model.page.search_results.length == 0 && model.page.error.length == 0){
+        html += `
+        <h1>Ingen flere rom på denne dato.</h1>`
+    }
+    
     //looping through the search results
     for (var room of model.page.search_results) {
-        var img_url = "";
-        var room_price = 0;
-        if (room.room_type == "Standart") {
-            img_url =
-                "https://amorgoshotel.com/wp-content/uploads/2014/12/Amorgos-Standard-Room1-e1464286427430.jpg";
-            room_price = model.prices.standart;
-        } else if (room.room_type == "Business") {
-            img_url =
-                "https://t-cf.bstatic.com/images/hotel/max1280x900/557/55724294.jpg";
-            room_price = model.prices.business;
-        } else if (room.room_type == "Premium") {
-            img_url =
-                "https://www.kidsquest.com/wp-content/uploads/2017/06/Soaring-Hotel-room.jpg";
-            room_price = model.prices.premium;
-        }
         html += `
         <div class="card">
             <p>${room.room_id}
             <div id="room.room_id">
-            <img src='${img_url}' alt="Standard" width="350" height="200">
+            <img src='${room.img_url}' alt="Standard" width="350" height="200">
             <p>Room Type: ${room.room_type}</p>
-            <p>Price: ${model.prices[room.room_type]}</p>
+            <p>Price: ${room.room_prices}</p>
              <button onclick="put_in_cart(${room.room_id})" class="btn"><i class="fas fa-luggage-cart"></i> Legg til i handlevogn</button>
             </div>
         </div>
