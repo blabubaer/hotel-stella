@@ -273,3 +273,7 @@ h2{
     color: white;
     cursor:pointer;
 }
+.deletebtn{
+    background:red;
+
+}

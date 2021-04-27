@@ -27,6 +27,7 @@ async function start() {
     model.booking_numbers = data.booking_number;
 
     database.ref('booking_numbers').on('value', (snap) => {
+        if(!data.bookings) model.bookings = {};
         model.booking_numbers = snap.val();
     })
     
@@ -214,7 +215,7 @@ function AddNewRoomView() {
             value="" /></div> `;
     html += `<button onclick="newRoom()" class="btn"><i class="fas fa-save"></i> Lagre</button>`;
 
-
+    html += footerView()
     app.innerHTML = html;
 }
 function showEditRoom() {
@@ -263,8 +264,8 @@ function showEditRoom() {
     html += '</select>'
     html += `<br><label for="imgurl">Bilde:</label><input type="text" name="imgurl" onchange="model.input.imgurl = this.value" value="${model.rooms[model.input.selectedRoom].img_url}" /></div> `;
     html += '<button onclick="editRoom()" class="alterButton"><i class="fas fa-redo"></i>Endre rom</button>';
-
-    app.innerHTML = html;
+    html += footerView()
+       app.innerHTML = html;
 }
 function showRoomWeekview() {
     let html = '';
@@ -377,7 +378,8 @@ function showRoomWeekview() {
     html += ` 
         </table >`;
     html += '<button onclick="setShowEditRoom()" class="alterButton"><i class="fas fa-redo"></i>Endre rom</button>';
-
+    html += `<button onclick="deleteRoom('${model.input.selectedRoom}')" class="btn deletebtn"><i class="fas fa-redo"></i>Delete</button>`;
+    html += footerView()
     app.innerHTML = html;
 }
 function showEditBooking(){
@@ -450,13 +452,13 @@ function showEditBooking(){
             <button onclick="alterbooking('${booking}')">Save</button>`
         }
     }
+    html += footerView()
     app.innerHTML = html;
 }
 function showSetUserOrPersonalia(){
     let html=``;
     html += viewHeader();
-    if(model.page.current_user == 2){
-        html += `
+    html += `
     <h2>Log inn, lag en ny bruker eller fyll ut personalia:</h2>
     <div id="personaliaWrapper">
     
@@ -468,7 +470,7 @@ function showSetUserOrPersonalia(){
         <label for="psw">Passord:</label><br>
         <input type="password" placeholder="Skriv inn passord" onchange="model.input.tempPassw = this.value" name="psw" >
         <br>
-        <button onclick="login(); setUserOrPersonaliaCart();" class="btn"><i class="fas fa-sign-in-alt"></i>login</button><br>
+        <button onclick="login(); book(); updateconfirmationview()" class="btn"><i class="fas fa-sign-in-alt"></i>login</button><br>
         <button onclick="setCreateNewUser()" class="blueButton"  ><i class="fas fa-user"></i> Ny bruker</button>
         
     </div>
@@ -501,15 +503,7 @@ function showSetUserOrPersonalia(){
         </div>
         </div>
     `;
-    }else{
-        
-        html += `
-        <h2>Du har nå booket ditt hotelrom</h2>
-
-        `;
-        book();
-    }
-    
+    html += footerView()
     app.innerHTML = html;
 }
 function updateShowBookingView() {
@@ -545,28 +539,22 @@ function updateCartView() {
     html += viewHeader();
     if (model.users[model.page.current_user].cart && model.users[model.page.current_user].cart.length != 0) {
         for (booking of model.users[model.page.current_user].cart) {
-            for (room in model.rooms) {
-                if (model.rooms[room].room_id == booking.room_id) {
-                    chosen_room = room;
-                    html += `
-                        <div class="card">
-                        <p>${room}
-                        <div id="${room}">
-                        <img src='${model.rooms[room].img_url}' alt="Standard" width="350" height="200">
-                        <p>Room Type: ${model.rooms[room].room_type}</p>
-                        <p>Price: ${model.prices[model.rooms[room].room_type]}</p>
-                        <p>Startdato: ${date_fixer(new Date(booking.dates[0]))}</p>
-                        <p>Sluttdato: ${date_fixer(new Date(booking.dates[booking.dates.length - 1]))}</p>
-                        <button onclick="delete_from_cart('${booking.booking_number}')" class="btn"><i class="fas fa-trash-alt"></i>Fjern fra Handlevogn</button>
-                        </div>
-                        </div>
-                        <button onclick="setUserOrPersonaliaCart()" class="btn"><i class="fas fa-shopping-cart"></i> Kjøpe</button>
-                        `
-                }
-            }
-
+            html += `
+                <div class="card">
+                <p>${booking.room_id}
+                <div id="${booking.room_id}">
+                <img src='${model.rooms[booking.room_id].img_url}' alt="Standard" width="350" height="200">
+                <p>Room Type: ${model.rooms[booking.room_id].room_type}</p>
+                <p>Price: ${model.rooms[booking.room_id].room_prices}</p>
+                <p>Startdato: ${date_fixer(new Date(booking.dates[0]))}</p>
+                <p>Sluttdato: ${date_fixer(new Date(booking.dates[booking.dates.length - 1]))}</p>
+                <button onclick="delete_from_cart('${booking.booking_number}')" class="btn deletebtn"><i class="fas fa-trash-alt"></i>Fjern fra Handlevogn</button>
+                </div>
+                </div>
+                `
 
         }
+        html += `<button onclick="model.page.buying = true;isloggedintest() " class="btn"><i class="fas fa-shopping-cart"></i> Kjøpe</button>`
     }
     else {
         html += `<h1>Din handlevogn er tom.</h1>`
@@ -619,12 +607,15 @@ function updateAdminSearchOnBookingNr() {
             html += `<p>Romnr: ${model.bookings[booking].room_id}</p>`;
             html += `<p>Antall personer: ${model.bookings[booking].num_of_pers}</p>`;
             html += '<p>Reserverte datoer: ';
+            
             if (model.bookings[booking].dates) {
-                for (let date of model.bookings[booking].dates) {
-                    date= new Date(date)
-                    adate = date_fixer(date);
-                    html += adate + ' -> ';
-                }
+                startdate = new Date(model.bookings[booking].dates[0]);
+                enddate = new Date(model.bookings[booking].dates[model.bookings[booking].dates.length - 1]);
+                startdate = date_fixer(startdate);
+                enddate = date_fixer(enddate);
+
+                html += startdate + ' -> ' + enddate;
+                
             }
 
             html += '</p>';
@@ -640,6 +631,7 @@ function updateAdminSearchOnBookingNr() {
 
     html += ` </div>`;
     model.input.adminSearchBookingNr = '';
+    html += footerView()
     app.innerHTML = html;
 }
 
@@ -751,6 +743,7 @@ function updateAdminSearchOnDate() {
 
     html += ` </div>`;
     model.input.adminSeachDate = '';
+    html += footerView()
     app.innerHTML = html;
 }
 
@@ -850,6 +843,7 @@ function updateAdminView() {
         </table >`;
 
     html += ` </div>`;
+    html += footerView()
     app.innerHTML = html;
 }
 
@@ -928,23 +922,19 @@ function updateUserpanelView() {
                 `;
     html += `<h2>${model.users[model.page.current_user].personalia.first_name}'s bookings</h2>`;
     html += `<div id="bookings">`;
-    for (let booking in model.bookings) {
-        if (model.bookings[booking].userId == model.page.current_user) {
-            html += `<div onclick="model.input.selectedBookingNr = '${model.bookings[booking].booking_number}'; setShowBookingView(); " class="booking">`;
+    for (let booking of model.users[model.page.current_user].list_of_bookings) {
+        
+            html += `<div onclick="model.input.selectedBookingNr = '${booking.booking_number}'; setShowBookingView(); " class="booking">`;
             html += `<br>`;
-            for (let room in model.rooms) {
-                if (model.rooms[room].room_id == model.bookings[booking].room_id) { // alle rom med rom nr fra booking
-                    html += model.rooms[room].room_type;
-                }
-            }
+            html += model.rooms[booking.room_id].room_type;
+               
             html += `<br>`;
-            for(date of model.bookings[booking].dates)
-            {
-                html += date_fixer(new Date(date)) + '<br>';
-            }
+            html += date_fixer(new Date(booking.dates[0])) + '--><br>';
+            html += date_fixer(new Date(booking.dates[booking.dates.length - 1])) + '<br>';
+
             
             html += `</div>`;
-        }
+        
     }
     html += `
             </div>
@@ -1283,4 +1273,19 @@ function bookingdetailView() {
     html += footerView()
 
     app.innerHTML = html;
+}
+
+function updateconfirmationview() {
+    var html = ''
+    html += viewHeader()
+    html += "<h1> Du har nå følgende reservasjoner:</h1>"
+    for( var booking of model.users[model.page.current_user].list_of_bookings){
+        html += `
+         <p>Booking-Nr: ${booking.booking_number}; Start-Dato: ${date_fixer(new Date(booking.dates[0]))}; Slutt-Dato: ${date_fixer(new Date(booking.dates[booking.dates.length -1]))}</p>
+        <br>
+        <br>`
+    }
+    
+    html += footerView()
+    app.innerHTML = html
 }

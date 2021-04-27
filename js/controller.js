@@ -29,6 +29,13 @@ function getBookId(roomid, bookedDate){
         }
     }
 }
+
+function deleteRoom(roomId) {
+    delete model.rooms[roomId];
+    model.page.page_pos = 'Admin panel';
+    updateView();
+}
+
 function newRoom() {
     if (model.input.roomtype != undefined && model.input.roomprice != undefined && model.input.beds != undefined
         && model.input.kids != undefined && model.input.imgurl != undefined && model.input.roomnr != undefined) {
@@ -148,7 +155,13 @@ function storeGuestPersonalia(){
             },
             cart: [] = model.users[currentUser].cart
         };
-        updateView();
+        database.ref('users/'+currentUser).set(model.users[currentUser])
+        if(model.page.page_pos = "Personalia cart"){
+            book()
+            updateconfirmationview()
+            return
+        }
+        updateView()
 }
 
 function editRoom() {
@@ -184,6 +197,15 @@ function login (){
     let counter = 0
     for (i in model.users){
         if(model.input.tempUser == model.users[i].personalia.email && model.input.tempPassw == model.users[i].password){
+            for(var booking of model.users[model.page.current_user].cart){
+                if (model.users[i].cart)model.users[i].cart.push(booking);
+                else {
+                    model.users[i].cart = [];
+                    model.users[i].cart.push(booking);
+                }
+                
+            }
+            
             delete model.users[model.page.current_user]
             database.ref('users/'+model.page.current_user).remove()
             model.page.current_user = model.users[i].userId;
@@ -196,9 +218,10 @@ function login (){
             if (model.users[model.page.current_user].role == 'admin' && model.page.page_pos != 'Personalia cart') {
                 setAdminPanel();
             } else if(model.page.page_pos == 'Personalia cart'){
-                model.users[model.page.current_user].cart = model.users[2].cart;
-                model.users[2].cart = [];
-                model.page.page_pos = 'Personalia cart';
+                model.input.tempUser = '';
+                model.input.tempPassw = '';
+                model.page.error = ''
+                return
             }
             else {
                 setUserPanel();
@@ -219,9 +242,39 @@ function login (){
     }
     
 }
-function logout(){
-    model.page.current_user = 2; 
-    setHomeView();
+async function logout(){
+    var databaseUpdate = new Promise (function(resolve,reject){
+        database.ref().once('value', (snap) => {
+            resolve(snap.val())
+          })
+    })
+    var data = await databaseUpdate
+    model.userId_counter = data.userId_counter
+    model.userId_counter ++
+        model.users[model.userId_counter] = {
+            password: "",
+            role: 'guest',
+            userId: model.userId_counter,
+            personalia: {
+                first_name: '',
+                last_name: '',
+                street: "",
+                city: "",
+                country: "",
+                email: "",
+                tel_num: "",
+            },
+            list_of_bookings: []
+        };
+        model.page.current_user=model.userId_counter
+        database.ref('users/' + model.page.current_user).set(model.users[model.page.current_user]);
+        database.ref('userId_counter').set(model.userId_counter);
+        var ex_date = new Date()
+            ex_date.setTime(ex_date.getTime()+(30*24*60*60*1000))
+            var newcookie ="user_id="+model.page.current_user+ ";expires="+ex_date + ";path=/";
+            document.cookie = newcookie
+    setHomeView()
+
 }
 function put_in_cart(roomId){
     var booking = {
@@ -378,8 +431,6 @@ function book() {
     database.ref('users').set(model.users)
     database.ref('rooms').set(model.rooms)
 
-    //needs further connection to next side!!!!!
-
 }
 
 function storePersonalia(){
@@ -454,14 +505,19 @@ async function newUser(){
                 email: model.input.tempEmail,
                 tel_num: model.input.tempTel,
             },
-            list_of_bookings: []
+            list_of_bookings: [],
+            cart : model.users[currentUser].cart,
         };
-        model.page.current_user = currentUser;
-        model.page.page_pos = 'login';
         //updating database
         database.ref('users/' + currentUser).set(model.users[currentUser]);
         database.ref('userId_counter').set(model.userId_counter);
+        if(model.page.buying) {
+            book()
+            updateconfirmationview()
+            return
 
+        }
+        else model.page.page_pos = 'User panel';
         updateView();
     } else if (!validEmail) {
         model.page.error = 'Eposten ' + model.input.tempEmail + ' er ikke korrekt ';
@@ -552,7 +608,7 @@ function search() {
     */
     // if not enough beds in all the available rooms
     else if (tot_beds < pers) {
-        model.page.error = "There are not enough beds available at the chosen dates."
+        model.page.error = "Vi har ikke rom som er stor nok for so mange personer."
         return
     }
         // if enough rooms and beds are available it return the list of rooms
@@ -596,3 +652,12 @@ function input_updater(input_field) {
         model.input.num_of_rooms = parseInt(input_field.value);
     }
   }
+function isloggedintest() {
+    if(model.users[model.page.current_user].role == 'guest'){
+        setUserOrPersonaliaCart()
+    }
+    else if(model.users[model.page.current_user].role == 'user'){
+        book()
+        updateconfirmationview()
+    }
+}
