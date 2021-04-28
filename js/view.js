@@ -77,6 +77,7 @@ function updateView() {
     if (model.page.page_pos == 'home') {
         model.input.start_date = ''
         model.input.end_date = ''
+        model.page.error = ""
         homepageview();
     } else if (model.page.page_pos == 'searchResults') {
         updateSearchView();
@@ -922,6 +923,7 @@ function updateUserpanelView() {
                 `;
     html += `<h2>${model.users[model.page.current_user].personalia.first_name}'s bookings</h2>`;
     html += `<div id="bookings">`;
+    if(!model.users[model.page.current_user].list_of_bookings) model.users[model.page.current_user].list_of_bookings = [];
     for (let booking of model.users[model.page.current_user].list_of_bookings) {
         
             html += `<div onclick="model.input.selectedBookingNr = '${booking.booking_number}'; setShowBookingView(); " class="booking">`;

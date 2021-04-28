@@ -492,6 +492,7 @@ async function newUser(){
     }
     if (isUnique && validEmail) { //epost er unik
         let currentUser = model.page.current_user;
+        if(!model.users[currentUser].cart) model.users[currentUser].cart = [];
         model.page.error = '';
         model.users[currentUser] = {
             password: model.input.tempPassw,
