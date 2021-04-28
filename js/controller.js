@@ -197,6 +197,7 @@ function login (){
     let counter = 0
     for (i in model.users){
         if(model.input.tempUser == model.users[i].personalia.email && model.input.tempPassw == model.users[i].password){
+            if (!model.users[model.page.current_user].cart)model.users[model.page.current_user].cart = [];
             for(var booking of model.users[model.page.current_user].cart){
                 if (model.users[i].cart)model.users[i].cart.push(booking);
                 else {

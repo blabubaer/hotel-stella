@@ -1131,7 +1131,10 @@ function viewHeader() {
 
 function footerView() {
     let html = ``;
-    html += `<div id="footer">
+    html += `
+    <br>
+    <br>
+    <div id="footer">
         <div class="footer-content">
 
             <div class="footer-section about">
