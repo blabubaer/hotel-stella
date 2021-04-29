@@ -204,7 +204,7 @@ function login (){
                     model.users[i].cart = [];
                     model.users[i].cart.push(booking);
                 }
-                
+                model.bookings[booking.booking_number].userId = model.users[i].userId
             }
             
             delete model.users[model.page.current_user]
@@ -357,57 +357,24 @@ function deleteBooking(bookingId){
        
     let roomNr = model.bookings[bookingId].room_id
     let booked_dates = model.bookings[bookingId].dates
-    for ( i in booked_dates){
-            model.rooms[roomNr].booked_dates.splice(model.rooms[roomNr].booked_dates.indexOf(booked_dates[i]),1)        
+    for (var i in booked_dates){
+            model.rooms[roomNr].booked_dates.splice(model.rooms[roomNr].booked_dates.indexOf(booked_dates[i]),1);
+            for(var x in model.users[model.bookings[bookingId].userId].list_of_bookings){
+                if (model.users[model.bookings[bookingId].userId].list_of_bookings[x].booking_number == bookingId){
+                    model.users[model.bookings[bookingId].userId].list_of_bookings.splice(x,1)
+                    database.ref("users/"+model.bookings[bookingId].userId + "/list_of_bookings").set(model.users[model.bookings[bookingId].userId].list_of_bookings)
+                }
+            }        
     }
     delete model.bookings[bookingId]
+    
+    database.ref("booking_numbers/"+model.booking_numbers.indexOf(bookingId)).remove()
+    model.booking_numbers.splice(model.booking_numbers.indexOf(bookingId),1)
     database.ref("bookings/" + bookingId).remove()
     database.ref("rooms/"+ roomNr).set(model.rooms[roomNr])
     model.page.page_pos = 'User panel'
     updateView()
-   // test this with new model before deleting below
-    
-
-   /* for(a in model.bookings){
-       if(model.bookings[a].booking_number == bookingId){
-           
-            roomNr = model.bookings[a].room_id;
-            if(model.bookings[a].dates != undefined){
-                for(let date in model.bookings[a].dates){
-                    booked_dates.push(model.bookings[a].dates[date])
-                }
-            }
-            
-            
-            for(let bookingdate of model.bookings[a].dates){
-                for(var i =0; i<model.rooms[z].booked_dates.length; i++){
-                    
-                    bookingdate = new Date(bookingdate);
-                    let rom_bookingdate = new Date(model.rooms[z].booked_dates[i]);
-                    
-                    if(bookingdate.getTime() === rom_bookingdate.getTime()){
-                        
-                        model.rooms[z].booked_dates.splice(i, 1)
-                        var roomsRef = database.ref('rooms');
-                        roomsRef.set(model.rooms);
-                    }
-                }
-            }
-                        
-                        
-                  
-                
-            }
-            model.bookings.splice(a, 1);
-
-            var rootRef = database.ref('bookings');
    
-            rootRef.set(model.bookings);
-
-
-
-        }
-    }*/
 }
 function book() {
     //adding booking from cart to bookings and booked_dates of rooms
